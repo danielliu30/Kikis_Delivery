@@ -1,6 +1,12 @@
 bakery/controller/HomeController.java
  bakery.controller.HomeController
+bakery/Services/BakedFormation.java
+ bakery.Services.BakedFormation
+bakery/Services/JSONFormation.java
+ bakery.Services.JSONFormation
 bakery/Services/DynamoDbConnection.java
  bakery.Services.DynamoDbConnection
+ bakery.Services.DynamoDbConnection$ItemKeys
+ bakery.Services.DynamoDbConnection$Tables
 bakery/StartUp.java
  bakery.StartUp

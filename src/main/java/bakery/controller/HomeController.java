@@ -1,18 +1,25 @@
 package bakery.controller;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import bakery.Services.BakedFormation;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class HomeController {
 
-    private HomeController(){
-
+    private final BakedFormation bakedFormation;
+    @Autowired
+    private HomeController(BakedFormation bakedFormation){
+        this.bakedFormation = bakedFormation;
     }
 
     @GetMapping("/")
     public String Index(){
-        //list of bakers'
-        return null;
+        return bakedFormation.getAvailableBakedItems();
+    }
+
+    @RequestMapping(method = RequestMethod.POST, path = "/addItem", params = "type")
+    public void AddStoreItem(@RequestParam("type") String type){
+
     }
 }
