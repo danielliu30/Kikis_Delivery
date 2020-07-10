@@ -30,7 +30,7 @@ public class DynamoDbConnection {
         attribute.clear();
         Map<String, AttributeValue> response = new HashMap<>();
         attribute.put(ItemKeys.Component.name(), AttributeValue.builder().s(ItemKeys.AvailableGoods.name()).build());
-        List<AttributeValue> aaa = new LinkedList<>();
+        List<AttributeValue> attributeList = new LinkedList<>();
         try{
             GetItemRequest request = GetItemRequest.builder()
                     .tableName(Tables.StoreFront.name())
@@ -42,7 +42,7 @@ public class DynamoDbConnection {
 
             response.values().forEach(val->{
                 for (AttributeValue item: val.l()) {
-                    aaa.add(item);
+                    attributeList.add(item);
                 }
             });
 
@@ -50,9 +50,13 @@ public class DynamoDbConnection {
 
         }
         Set<String> availableItem = new HashSet<>();
-        aaa.forEach(attr->{
+        attributeList.forEach(attr->{
             availableItem.add(attr.s());
         });
         return gson.toJson(availableItem);
+    }
+
+    void addAvailableBakedGoods(){
+
     }
 }
