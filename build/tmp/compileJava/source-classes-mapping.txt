@@ -1,4 +1,6 @@
 bakery/controller/HomeController.java
  bakery.controller.HomeController
+bakery/Services/DynamoDbConnection.java
+ bakery.Services.DynamoDbConnection
 bakery/StartUp.java
  bakery.StartUp
