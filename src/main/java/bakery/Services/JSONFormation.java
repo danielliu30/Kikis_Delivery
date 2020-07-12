@@ -3,10 +3,7 @@ package bakery.Services;
 import com.google.gson.Gson;
 import org.springframework.stereotype.Service;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
+import java.io.*;
 import java.util.List;
 import java.util.Map;
 
@@ -25,7 +22,7 @@ public class JSONFormation {
         return dbConnection.getAvailableBakedGoods();
     }
 
-    void validateAddItem(String request) throws FileNotFoundException {
+    void validateAddItem(String request) throws IOException {
         //may need to modify incoming string
         dbConnection.addAvailableBakedGoods(request);
     }

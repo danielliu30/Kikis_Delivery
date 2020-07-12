@@ -8,13 +8,7 @@
       <change beforePath="$PROJECT_DIR$/.gradle/5.2.1/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.2.1/fileHashes/fileHashes.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/5.2.1/javaCompile/classAnalysis.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.2.1/javaCompile/classAnalysis.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/5.2.1/javaCompile/javaCompile.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.2.1/javaCompile/javaCompile.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/6.5/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.5/executionHistory/executionHistory.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/6.5/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.5/executionHistory/executionHistory.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/6.5/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.5/fileHashes/fileHashes.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/6.5/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.5/fileHashes/fileHashes.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/6.5/javaCompile/javaCompile.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.5/javaCompile/javaCompile.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/cache.properties" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/cache.properties" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build/classes/java/main/bakery/Services/BakedFormation.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/bakery/Services/BakedFormation.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build/classes/java/main/bakery/Services/DynamoDbConnection$ItemKeys.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/bakery/Services/DynamoDbConnection$ItemKeys.class" afterDir="false" />
@@ -22,13 +16,10 @@
       <change beforePath="$PROJECT_DIR$/build/classes/java/main/bakery/Services/DynamoDbConnection.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/bakery/Services/DynamoDbConnection.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build/classes/java/main/bakery/Services/JSONFormation.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/bakery/Services/JSONFormation.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build/classes/java/main/bakery/controller/HomeController.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/bakery/controller/HomeController.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/libs/bakery.bakeshop-1.0-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/build/libs/bakery.bakeshop-1.0-SNAPSHOT.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/AvailableItems.json" beforeDir="false" afterPath="$PROJECT_DIR$/build/resources/main/AvailableItems.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/bakery/Services/BakedFormation.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bakery/Services/BakedFormation.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/bakery/Services/DynamoDbConnection.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bakery/Services/DynamoDbConnection.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/bakery/Services/JSONFormation.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bakery/Services/JSONFormation.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/bakery/controller/HomeController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bakery/controller/HomeController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/AvailableItems.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/AvailableItems.json" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -120,7 +111,10 @@
       <workItem from="1594380145720" duration="1830000" />
       <workItem from="1594381995580" duration="261000" />
       <workItem from="1594382359294" duration="12378000" />
-      <workItem from="1594395453888" duration="2318000" />
+      <workItem from="1594395453888" duration="2922000" />
+      <workItem from="1594398817541" duration="3919000" />
+      <workItem from="1594404379698" duration="17000" />
+      <workItem from="1594586034227" duration="1559000" />
     </task>
     <task id="LOCAL-00001" summary="Resolved conflicts from init commit">
       <created>1594382940414</created>
@@ -175,27 +169,27 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/bakery/controller/HomeController.java</url>
-          <line>19</line>
+          <line>21</line>
           <option name="timeStamp" value="4" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/bakery/Services/DynamoDbConnection.java</url>
-          <line>48</line>
+          <line>50</line>
           <option name="timeStamp" value="7" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/bakery/Services/DynamoDbConnection.java</url>
-          <line>68</line>
+          <line>67</line>
           <option name="timeStamp" value="9" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/bakery/Services/DynamoDbConnection.java</url>
-          <line>100</line>
+          <line>134</line>
           <option name="timeStamp" value="10" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-method">
           <url>file://$PROJECT_DIR$/src/main/java/bakery/controller/HomeController.java</url>
-          <line>23</line>
+          <line>25</line>
           <properties class="bakery.controller.HomeController" method="AddStoreItem">
             <option name="EMULATED" value="true" />
           </properties>
