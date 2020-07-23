@@ -1,9 +1,15 @@
-bakery/controller/HomeController.java
- bakery.controller.HomeController
+bakery/controller/CustomerController.java
+ bakery.controller.CustomerController
+bakery/controller/StoreController.java
+ bakery.controller.StoreController
+bakery/Models/SingleCustomer.java
+ bakery.Models.SingleCustomer
+bakery/Models/BakedItem.java
+ bakery.Models.BakedItem
+bakery/Services/S3Connection.java
+ bakery.Services.S3Connection
 bakery/Services/BakedFormation.java
  bakery.Services.BakedFormation
-bakery/Services/JSONFormation.java
- bakery.Services.JSONFormation
 bakery/Services/DynamoDbConnection.java
  bakery.Services.DynamoDbConnection
  bakery.Services.DynamoDbConnection$ItemKeys

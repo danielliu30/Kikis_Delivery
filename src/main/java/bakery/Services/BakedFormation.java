@@ -3,25 +3,42 @@ package bakery.Services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+
+import bakery.Models.BakedItem;
+import bakery.Models.SingleCustomer;
 
 @Service
 public class BakedFormation {
 
-    private final JSONFormation jsonFormation;
 
-
+	private final DynamoDbConnection dbConnection;
+	private final S3Connection s3Connection;
     @Autowired
-    private BakedFormation(JSONFormation jsonFormation){
-        this.jsonFormation = jsonFormation;
+    private BakedFormation(DynamoDbConnection dbConnection, S3Connection s3Connection){
+        this.dbConnection = dbConnection;
+        this.s3Connection = s3Connection;
     }
 
+    
     public String getAvailableBakedItems(){
-        return jsonFormation.configureAvailableGoods();
+        return dbConnection.getAvailableBakedGoods();
     }
 
-    public void addAvailableBakedItems(String request) throws IOException {
-        jsonFormation.validateAddItem(request);
+    public void addAvailableBakedItems(BakedItem item) throws JsonProcessingException{
+        dbConnection.addAvailableBakedGoods(item);;
+    }
+
+    public void uploadFile(){
+        s3Connection.uploadItem();
+    }
+
+    public String getMenu(){
+        return s3Connection.retrieveBucketItem();
+    }
+    
+    public void addCustomer(SingleCustomer customer){
+    	//validate email
+    	dbConnection.addCustomerMember(customer);
     }
 }

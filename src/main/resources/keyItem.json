@@ -1,0 +1,32 @@
+{
+  "menu": {
+    "location" : "1234 someLaneOrDrive",
+    "Contact" : "123-345-7890",
+    "Baked Items": {
+      "Cake": [
+        {
+          "Flavor": "Chocolate",
+          "Size": "L",
+          "Quantity": 10
+        },
+        {
+          "Flavor": "Vanilla",
+          "Size": "S",
+          "Quantity": 6
+        }
+      ],
+      "Cookie": [
+
+      ],
+      "Donut": [
+
+      ],
+      "Bread": [
+
+      ]
+    },
+    "Drinks": {
+
+    }
+  }
+}
