@@ -1,6 +1,12 @@
 package bakery.Services;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+
+import com.google.gson.Gson;
+
+import software.amazon.awssdk.core.ResponseBytes;
+import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.core.sync.ResponseTransformer;
 import software.amazon.awssdk.regions.Region;
@@ -8,12 +14,20 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
 
 import java.io.*;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 
 @Service
 public class S3Connection {
     private final static S3Client client = S3Client.builder().region(Region.US_EAST_2).build();
-    private final String path = "C:\\Users\\barney\\IdeaProjects\\bakery.bakeshop\\src\\main\\resources\\s3Test.json";
+    private final String path = "C:\\Users\\barney\\IdeaProjects\\bakery.bakeshop\\src\\main\\resources\\s3CategoryList.json";
+    
+    private static final Gson gson = new Gson();
     private S3Connection (){
 
     }
@@ -33,22 +47,27 @@ public class S3Connection {
         }
     }
 
-    String retrieveBucketItem(){
-        GetObjectResponse object = null;
-        try{
-             object = client.getObject(GetObjectRequest.builder()
-                            .bucket("ris-tester-123-123-44455")
-                            .key("key")
-                            .build(),
-                    ResponseTransformer.toOutputStream(new FileOutputStream(new File(path))));
+    
+    Map<String, List<String>> retrieveCategoryList(){
+//        GetObjectResponse object = null;
+//        try{
+//             object = client.getObject(GetObjectRequest.builder()
+//                            .bucket("ris-tester-123-123-44455")
+//                            .key("key")
+//                            .build(),
+//                    ResponseTransformer.toOutputStream(new FileOutputStream(new File(path))));
+             
+    	ResponseInputStream<GetObjectResponse> object = null;
+		try {
+			
+			object = client.getObject(GetObjectRequest.builder().bucket("ris-tester-123-123-44455").key("key").build(),
+					ResponseTransformer.toInputStream());
         }catch (S3Exception e){
 
-        }catch (FileNotFoundException e){
-
         }
-
-        String str = object.toString();
-        return str;
+		Reader reader = new BufferedReader(new InputStreamReader(object,Charset.forName(StandardCharsets.UTF_8.name())));
+		Map<String,List<String>> test = gson.fromJson(reader, Map.class);
+        return test;
     }
     void createBucket(){
         try{

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.*;
+import software.amazon.awssdk.services.dynamodb.paginators.ScanIterable;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -31,31 +32,31 @@ public class DynamoDbConnection {
     }
 
     //may only be used for getting a single item. Will want to batch fetch when getting larger list
-    String getAvailableBakedGoods(){
-        attribute.clear();
-        Map<String, AttributeValue> response = new HashMap<>();
-        attribute.put(ItemKeys.Component.name(), AttributeValue.builder().s(ItemKeys.AvailableGoods.name()).build());
-        Set<String> availableItem = new HashSet<>();
-        try{
-            GetItemRequest request = GetItemRequest.builder()
-                    .tableName(Tables.StoreFront.name())
-                    .key(attribute)
-                    .projectionExpression("Baked")
-                    .build();
-
-            response = client.getItem(request).item();
-
-            response.values().forEach(val->{
-                for (AttributeValue item: val.l()) {
-                    availableItem.add(item.s());
-                }
-            });
-
-        }catch (DynamoDbException e){
-
+    List<Map<String,String>> getBakedGoodCategoryList(String category){
+    	List<Map<String,String>> result = new LinkedList<>();
+    	ScanIterable response = null;
+    	ScanRequest request = ScanRequest.builder()
+    			.tableName(Tables.BakedGoods.name())
+    			.filterExpression("BakedItem = :bakedItem")
+    			.expressionAttributeValues(
+    					Collections.singletonMap(":bakedItem", AttributeValue.builder().s(category).build()))
+    			.build();
+    		
+    	try {
+    		response = client.scanPaginator(request);	
+    	}catch(Exception e) {
+    		
+    	}
+    	for (Map<String, AttributeValue> item: response.items()){
+            Map<String, String> tempMap = new HashMap();
+            for (String indKey : item.keySet()) {
+            	String str = item.get(indKey).toString();
+            	String temp = str.toString().substring(str.indexOf("S=")+2, str.indexOf(", "));
+                tempMap.put(indKey, temp);
+            }
+            result.add(tempMap);
         }
-
-        return gson.toJson(availableItem);
+        return result;
     }
 
     void addAvailableBakedGoods(BakedItem item) throws JsonProcessingException  {

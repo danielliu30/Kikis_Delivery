@@ -5,12 +5,15 @@ import bakery.Models.SingleCustomer;
 import bakery.Services.BakedFormation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
-
+import org.springframework.http.CacheControl;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @RestController
 @RequestMapping("store")
@@ -22,9 +25,14 @@ public class StoreController {
         this.bakedFormation = bakedFormation;
     }
 
-    @GetMapping("/")
-    public String Index(){
-        return bakedFormation.getAvailableBakedItems();
+    @GetMapping("/home")
+    public String Index() {
+    	
+    	return bakedFormation.getCategories();
+    }
+    @GetMapping("/{category}")
+    public String getCategoryList(@PathVariable String category){
+        return bakedFormation.getAvailableBakedItems(category);
     }
 
     //probably want to add bake item models for json mapping
@@ -41,11 +49,11 @@ public class StoreController {
     }
 
     @GetMapping("/menu")
-    public Map<String, Object> getMenu(){
-    	Map<String,Object> item = new HashMap<>();
-    	item.put("Name", "Stacey");
-    	item.put("Link", new Link("home","http://localhost:8080/"));
-        return item;
+    public ResponseEntity<Map<String, List<String>>> getMenu(){
+    	CacheControl cacheControl = CacheControl.maxAge(30, TimeUnit.MINUTES);
+    	//this http cache only work on msft edge, need to change defualt cahce settings
+        return ResponseEntity.ok().cacheControl(cacheControl)
+        		.body(bakedFormation.getMenu());
     }
     
     @RequestMapping(method = RequestMethod.POST, path = "/addCustomer")
