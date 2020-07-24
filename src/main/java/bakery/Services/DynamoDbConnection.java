@@ -59,9 +59,11 @@ public class DynamoDbConnection {
         return result;
     }
 
+    //want to revise how we actually build the item's attribute
     void addAvailableBakedGoods(BakedItem item) throws JsonProcessingException  {
 		ObjectMapper obj = new ObjectMapper();
 		Map<String, String> revisedItem = gson.fromJson(obj.writeValueAsString(item), Map.class);
+		attribute.clear();
 		attribute.put(ItemKeys.BakedItem.name(), AttributeValue.builder().s(revisedItem.get("category")).build());
 		attribute.put("ItemVariation", AttributeValue.builder().s(LocalDateTime.now().toString()).build());
 		revisedItem.remove("Category");
@@ -88,12 +90,14 @@ public class DynamoDbConnection {
     }
 
     //need POST req to be json
-    String addCustomerMember(SingleCustomer customer){
+    String addCustomerMember(SingleCustomer customer) throws JsonProcessingException{
+    	ObjectMapper obj = new ObjectMapper();
+		Map<String, String> revisedItem = gson.fromJson(obj.writeValueAsString(customer), Map.class);
         attribute.clear();
-        attribute.put(ItemKeys.Id.name().toLowerCase(), AttributeValue.builder().s(customer.getEmail()).build());
-        attribute.put("Name", AttributeValue.builder().s(customer.getName()).build());
-        attribute.put("Member", AttributeValue.builder().s(customer.getMemberStatus()).build());
-        attribute.put("LastUpdated", AttributeValue.builder().s(customer.getLastUpdated()).build());
+        
+        for (Map.Entry<String, String> pair : revisedItem.entrySet()) {
+        	attribute.put(pair.getKey(), AttributeValue.builder().s(pair.getValue()).build());
+        }
         //add reward card
 
 
@@ -112,7 +116,7 @@ public class DynamoDbConnection {
     }
 
 
-    String getCustomerList(){
+    Set<Map<String,String>> getCustomerList(){
        ScanResponse response;
        Set<Map<String,String>> result = new HashSet<>();
         try{
@@ -124,15 +128,16 @@ public class DynamoDbConnection {
             for (Map<String, AttributeValue> item: response.items()){
                 Map<String, String> tempMap = new HashMap<String, String>();
                 for (String indKey : item.keySet()) {
-                    String str = indKey.substring(indKey.indexOf('S'), indKey.indexOf('='));
-                    tempMap.put(indKey, str);
+                    String str = item.get(indKey).toString();
+                    String parsed = str.substring(str.indexOf("S=")+2, str.indexOf(", "));
+                    tempMap.put(indKey, parsed);
                 }
                 result.add(tempMap);
             }
         }catch (DynamoDbException e){
-            return e.getMessage();
+            //log some error;
         }
-        return gson.toJson(result);
+        return result;
     }
 
 //

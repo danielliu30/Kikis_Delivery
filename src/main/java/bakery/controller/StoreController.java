@@ -20,6 +20,7 @@ import java.util.concurrent.TimeUnit;
 public class StoreController {
 
     private final BakedFormation bakedFormation;
+    private final CacheControl defaultCache =  CacheControl.maxAge(30, TimeUnit.MINUTES);
     @Autowired
     private StoreController(BakedFormation bakedFormation){
         this.bakedFormation = bakedFormation;
@@ -50,9 +51,9 @@ public class StoreController {
 
     @GetMapping("/menu")
     public ResponseEntity<Map<String, List<String>>> getMenu(){
-    	CacheControl cacheControl = CacheControl.maxAge(30, TimeUnit.MINUTES);
+    	
     	//this http cache only work on msft edge, need to change defualt cahce settings
-        return ResponseEntity.ok().cacheControl(cacheControl)
+        return ResponseEntity.ok().cacheControl(defaultCache)
         		.body(bakedFormation.getMenu());
     }
     
@@ -66,5 +67,11 @@ public class StoreController {
     	}
     	
     	return "Added Customer";
+    }
+    
+    @GetMapping("/customerList")
+    public ResponseEntity<String> getAllCustomers(){
+    	return ResponseEntity.ok().cacheControl(defaultCache)
+    			.body(bakedFormation.getAllCustomers());
     }
 }

@@ -60,7 +60,7 @@ public class S3Connection {
     	ResponseInputStream<GetObjectResponse> object = null;
 		try {
 			
-			object = client.getObject(GetObjectRequest.builder().bucket("ris-tester-123-123-44455").key("key").build(),
+ 			object = client.getObject(GetObjectRequest.builder().bucket("ris-tester-123-123-44455").key("key").build(),
 					ResponseTransformer.toInputStream());
         }catch (S3Exception e){
 

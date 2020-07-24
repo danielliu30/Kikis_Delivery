@@ -26,13 +26,14 @@ public class BakedFormation {
 	private final S3Connection s3Connection;
 	private static final Gson gson = new Gson();
 	private static Set<String> categorySet;
-    @Autowired
+    
+	//needed to change privacy from private due to runtime error with @cacheable
+	@Autowired
     BakedFormation(DynamoDbConnection dbConnection, S3Connection s3Connection){
         this.dbConnection = dbConnection;
         this.s3Connection = s3Connection;
     }
 
-    //hot fix until I figure something out
     public String getCategories() {
     	Set<Link> linkSet = new HashSet<Link>();
     	Map<String,List<String>> reformed = this.getMenu();
@@ -65,8 +66,12 @@ public class BakedFormation {
         return s3Connection.retrieveCategoryList();
     }
     
-    public void addCustomer(SingleCustomer customer){
+    public void addCustomer(SingleCustomer customer) throws JsonProcessingException{
     	//validate email
     	dbConnection.addCustomerMember(customer);
+    }
+    
+    public String getAllCustomers() {
+    	return gson.toJson(dbConnection.getCustomerList());
     }
 }
