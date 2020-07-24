@@ -26,7 +26,7 @@ public class BakedFormation {
 	private final S3Connection s3Connection;
 	private static final Gson gson = new Gson();
 	private static Set<String> categorySet;
-    
+    private final String baseURL = "http://localhost:8080/store/";
 	//needed to change privacy from private due to runtime error with @cacheable
 	@Autowired
     BakedFormation(DynamoDbConnection dbConnection, S3Connection s3Connection){
@@ -38,15 +38,15 @@ public class BakedFormation {
     	Set<Link> linkSet = new HashSet<Link>();
     	Map<String,List<String>> reformed = this.getMenu();
     	reformed.get("BakedItem").forEach(item->{
-    		linkSet.add(new Link(item,"http://localhost:8080/store/"+item));
+    		linkSet.add(new Link(item,baseURL+item));
     	});
-  
+    	linkSet.add(new Link("Customer", baseURL+"customerList"));
 		//look into using links instead of link
 		return gson.toJson(linkSet);
     }
     public String getAvailableBakedItems(String category){
     	Map<String, Object> reformed = new HashMap<String, Object>();
-        reformed.put("Home", new Link("home","http://localhost:8080/store/home"));
+        reformed.put("Home", new Link("home",baseURL+"/"));
         reformed.put(category, dbConnection.getBakedGoodCategoryList(category));
         return gson.toJson(reformed);
          
@@ -62,7 +62,7 @@ public class BakedFormation {
 
     //caching for google chrome, since it doesn't honor default http cache
     @Cacheable("allCategories")
-    public Map<String,List<String>> getMenu(){
+    private Map<String,List<String>> getMenu(){
         return s3Connection.retrieveCategoryList();
     }
     

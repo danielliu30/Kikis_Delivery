@@ -7,12 +7,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonInclude(Include.NON_NULL)
 public class SingleCustomer {
-	@JsonProperty("email")
+	@JsonProperty
 	private String email;
-	@JsonProperty("name")
+	@JsonProperty
 	private String name;
-	@JsonProperty("member")
-	private String memberStatus;
-	@JsonProperty("updated")
-	private String time = LocalDateTime.now().toString(); 
+	@JsonProperty
+	private String member;
+	@JsonProperty
+	private String updated = LocalDateTime.now().toString(); 
 }

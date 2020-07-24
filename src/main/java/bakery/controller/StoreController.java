@@ -26,7 +26,7 @@ public class StoreController {
         this.bakedFormation = bakedFormation;
     }
 
-    @GetMapping("/home")
+    @GetMapping("/")
     public String Index() {
     	
     	return bakedFormation.getCategories();
@@ -49,13 +49,6 @@ public class StoreController {
         bakedFormation.uploadFile();
     }
 
-    @GetMapping("/menu")
-    public ResponseEntity<Map<String, List<String>>> getMenu(){
-    	
-    	//this http cache only work on msft edge, need to change defualt cahce settings
-        return ResponseEntity.ok().cacheControl(defaultCache)
-        		.body(bakedFormation.getMenu());
-    }
     
     @RequestMapping(method = RequestMethod.POST, path = "/addCustomer")
     public String addCustomer(@RequestBody SingleCustomer customer) {
@@ -69,6 +62,7 @@ public class StoreController {
     	return "Added Customer";
     }
     
+  //this http cache only work on msft edge, need to change defualt cahce settings
     @GetMapping("/customerList")
     public ResponseEntity<String> getAllCustomers(){
     	return ResponseEntity.ok().cacheControl(defaultCache)
