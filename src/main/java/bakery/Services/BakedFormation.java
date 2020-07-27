@@ -2,6 +2,7 @@ package bakery.Services;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -35,7 +36,7 @@ public class BakedFormation {
     }
 
     public String getCategories() {
-    	Set<Link> linkSet = new HashSet<Link>();
+    	List<Link> linkSet = new LinkedList<Link>();
     	Map<String,List<String>> reformed = this.getMenu();
     	reformed.get("BakedItem").forEach(item->{
     		linkSet.add(new Link(item,baseURL+item));
