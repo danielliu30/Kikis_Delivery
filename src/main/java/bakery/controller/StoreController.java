@@ -26,14 +26,16 @@ public class StoreController {
         this.bakedFormation = bakedFormation;
     }
 
-    @GetMapping("/")
-    public String Index() {
+    @GetMapping("")
+    public ResponseEntity<String> Index() {
     	
-    	return bakedFormation.getCategories();
+    	return ResponseEntity.ok().cacheControl(defaultCache)
+    			.body(bakedFormation.getCategories());
     }
     @GetMapping("/{category}")
-    public String getCategoryList(@PathVariable String category){
-        return bakedFormation.getAvailableBakedItems(category);
+    public ResponseEntity<String> getCategoryList(@PathVariable String category){
+        return ResponseEntity.ok().cacheControl(defaultCache)
+        		.body(bakedFormation.getAvailableBakedItems(category));
     }
 
     //probably want to add bake item models for json mapping

@@ -47,7 +47,7 @@ public class BakedFormation {
     }
     public String getAvailableBakedItems(String category){
     	Map<String, Object> reformed = new HashMap<String, Object>();
-        reformed.put("Home", new Link("home",baseURL+"/"));
+        reformed.put("Home", new Link("home",baseURL));
         reformed.put(category, dbConnection.getBakedGoodCategoryList(category));
         return gson.toJson(reformed);
          
@@ -72,7 +72,7 @@ public class BakedFormation {
     	dbConnection.addCustomerMember(customer);
     }
     
-    public String getAllCustomers() {
+    public String getAllCustomers() {    	
     	return gson.toJson(dbConnection.getCustomerList());
     }
 }

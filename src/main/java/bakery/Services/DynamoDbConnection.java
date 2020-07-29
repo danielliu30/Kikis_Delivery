@@ -116,9 +116,9 @@ public class DynamoDbConnection {
     }
 
 
-    Set<Map<String,String>> getCustomerList(){
+    List<Map<String,String>> getCustomerList(){
        ScanResponse response;
-       Set<Map<String,String>> result = new HashSet<>();
+       List<Map<String,String>> result = new LinkedList<>();
         try{
             ScanRequest request = ScanRequest.builder()
                     .tableName(Tables.Customers.name())

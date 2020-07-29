@@ -32,6 +32,21 @@ public class S3Connection {
 
     }
 
+//    void uploadItem(){
+//        File f = new File(path);
+//        try{
+//            PutObjectResponse response  = client.putObject(
+//                    PutObjectRequest.builder()
+//                    .bucket("ris-tester-123-123-44455")
+//                    .key("key")
+//                    .build(),
+//                    RequestBody.fromFile(f));
+//
+//        }catch (S3Exception e){
+//
+//        }
+//    }
+    //potential update with string instead of local file that doesn't even exist lol
     void uploadItem(){
         File f = new File(path);
         try{
@@ -46,16 +61,7 @@ public class S3Connection {
 
         }
     }
-
-    
     Map<String, List<String>> retrieveCategoryList(){
-//        GetObjectResponse object = null;
-//        try{
-//             object = client.getObject(GetObjectRequest.builder()
-//                            .bucket("ris-tester-123-123-44455")
-//                            .key("key")
-//                            .build(),
-//                    ResponseTransformer.toOutputStream(new FileOutputStream(new File(path))));
              
     	ResponseInputStream<GetObjectResponse> object = null;
 		try {
