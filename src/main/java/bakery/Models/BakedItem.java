@@ -1,9 +1,16 @@
 package bakery.Models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+/**
+ * POJO for all baked goods. Used during deserialization 
+ * in the StoreController
+ * @author barney
+ *
+ */
 @JsonInclude(Include.NON_NULL)
 public class BakedItem {
 
@@ -29,5 +36,11 @@ public class BakedItem {
 	private String vegan;
 	@JsonProperty
 	private String glutenFree;
+	@JsonProperty
+	private String expirationTime;
 
+	@JsonIgnore
+	public int getExpirationTime() {
+		return Integer.parseInt(expirationTime);
+	}
 }

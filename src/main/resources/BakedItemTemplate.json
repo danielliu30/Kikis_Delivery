@@ -9,5 +9,7 @@
   "toppings":"null",
   "fillings":"null",
   "vegan":"null",
-  "glutenFree":"null"
+  "glutenFree":"null",
+  "cost":"null",
+  "expirationTime":"null"
 }

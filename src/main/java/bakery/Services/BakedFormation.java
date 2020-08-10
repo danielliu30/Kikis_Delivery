@@ -18,7 +18,11 @@ import com.google.gson.Gson;
 
 import bakery.Models.BakedItem;
 import bakery.Models.SingleCustomer;
-
+/**
+ * An abstraction layer between aws services and all REST controllers
+ * @author barney
+ *
+ */
 @Service
 public class BakedFormation {
 
@@ -26,7 +30,7 @@ public class BakedFormation {
 	private final DynamoDbConnection dbConnection;
 	private final S3Connection s3Connection;
 	private static final Gson gson = new Gson();
-	private static Set<String> categorySet;
+
     private final String baseURL = "http://localhost:8080/store/";
 	//needed to change privacy from private due to runtime error with @cacheable
 	@Autowired
@@ -35,6 +39,11 @@ public class BakedFormation {
         this.s3Connection = s3Connection;
     }
 
+	/**
+	 * Makes a call to retrieve the menu list and parses the items to
+	 * generate a link for all categories. 
+	 * @return a JSON string with all links to categories and customers
+	 */
     public String getCategories() {
     	List<Link> linkSet = new LinkedList<Link>();
     	Map<String,List<String>> reformed = this.getMenu();
@@ -45,6 +54,13 @@ public class BakedFormation {
 		//look into using links instead of link
 		return gson.toJson(linkSet);
     }
+    
+    /**
+     * Makes a call to retrieve of all baked items in a specified category
+     * and generates links for navigation back to main page
+     * @param category a string that specifies the type of baked good
+     * @return a JSON string of all items in a specified category
+     */
     public String getAvailableBakedItems(String category){
     	Map<String, Object> reformed = new HashMap<String, Object>();
         reformed.put("Home", new Link("home",baseURL));
@@ -53,14 +69,23 @@ public class BakedFormation {
          
     }
 
+    /**
+     * Sends a BakedItem to be processed for storage
+     * @param item a BakedItem that represents a single baked good
+     * @throws JsonProcessingException if Object can not be serialized into a JSON string
+     */
     public void addAvailableBakedItems(BakedItem item) throws JsonProcessingException{
-        dbConnection.addAvailableBakedGoods(item);;
+        dbConnection.addAvailableBakedGoods(item);
     }
 
     public void uploadFile(){
         s3Connection.uploadItem();
     }
 
+    /**
+     * 
+     * @return
+     */
     //caching for google chrome, since it doesn't honor default http cache
     @Cacheable("allCategories")
     private Map<String,List<String>> getMenu(){
@@ -75,4 +100,12 @@ public class BakedFormation {
     public String getAllCustomers() {    	
     	return gson.toJson(dbConnection.getCustomerList());
     }
+    
+    public void deleteCustomer(String partitionKey, String keyValue) {
+    	dbConnection.deleteCustomer(partitionKey, keyValue);
+    }
+    
+	public void deleteStoreItem(String partitionKey, String keyValue) {
+		dbConnection.deleteBakedItem(partitionKey, keyValue);
+	}
 }

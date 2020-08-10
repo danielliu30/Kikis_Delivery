@@ -2,9 +2,31 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="25a3894b-34f8-4fb0-a3f6-3e4750fcbf66" name="Default Changelist" comment="Resolved conflicts from init commit&#10;Added DB class">
+      <change beforePath="$PROJECT_DIR$/.gradle/6.5/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.5/executionHistory/executionHistory.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/6.5/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.5/executionHistory/executionHistory.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/6.5/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.5/fileHashes/fileHashes.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/6.5/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.5/fileHashes/fileHashes.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/6.5/javaCompile/javaCompile.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.5/javaCompile/javaCompile.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/6.5/javaCompile/taskHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.5/javaCompile/taskHistory.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/bakery/Services/BakedFormation.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/bakery/Services/BakedFormation.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/bakery/Services/DynamoDbConnection$ItemKeys.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/bakery/Services/DynamoDbConnection$ItemKeys.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/bakery/Services/DynamoDbConnection$Tables.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/bakery/Services/DynamoDbConnection$Tables.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/bakery/Services/DynamoDbConnection.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/bakery/Services/DynamoDbConnection.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/bakery/StartUp.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/bakery/StartUp.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/libs/bakery.bakeshop-1.0-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/build/libs/bakery.bakeshop-1.0-SNAPSHOT.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/tmp/compileJava/source-classes-mapping.txt" beforeDir="false" afterPath="$PROJECT_DIR$/build/tmp/compileJava/source-classes-mapping.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bakery/Models/BakedItem.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bakery/Models/BakedItem.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bakery/Models/SingleCustomer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bakery/Models/SingleCustomer.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/bakery/Services/BakedFormation.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bakery/Services/BakedFormation.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/bakery/Services/DynamoDbConnection.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bakery/Services/DynamoDbConnection.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/bakery/Services/S3Connection.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bakery/Services/S3Connection.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bakery/Services/Security/JwtAuthenticationEntryPoint.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bakery/Services/Security/JwtAuthenticationEntryPoint.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bakery/Services/Security/RequestFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bakery/Services/Security/RequestFilter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bakery/Services/Security/TokenUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bakery/Services/Security/TokenUtil.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bakery/Services/Security/WebSecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bakery/Services/Security/WebSecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bakery/StartUp.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bakery/StartUp.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bakery/controller/CustomerController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bakery/controller/CustomerController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/bakery/controller/StoreController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bakery/controller/StoreController.java" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -111,6 +133,7 @@
       <workItem from="1595258582284" duration="603000" />
       <workItem from="1595523813983" duration="625000" />
       <workItem from="1595612303114" duration="12000" />
+      <workItem from="1596725631254" duration="38000" />
     </task>
     <task id="LOCAL-00001" summary="Resolved conflicts from init commit">
       <created>1594382940414</created>
