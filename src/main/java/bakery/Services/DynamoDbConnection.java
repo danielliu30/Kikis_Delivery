@@ -64,16 +64,16 @@ public class DynamoDbConnection {
     		
     	}
     	for (Map<String, AttributeValue> item: response.items()){
-            Map<String, String> tempMap = new HashMap();
+            Map<String, String> tempMap = new HashMap<>();
             for (String indKey : item.keySet()) {
-            	String str = item.get(indKey).toString();
-            	String temp = str.toString().substring(str.indexOf("S=")+2, str.indexOf(", "));
+//            	String str = item.get(indKey).toString();
+//            	String temp = str.toString().substring(str.indexOf("S=")+2, str.indexOf(", "));
             	if(indKey.equals(Keys.BakedItem.name())) {
-            		partition.append(temp+"/");
+            		partition.append(item.get(indKey).s()+"/");
             	}else if(indKey.equals(Keys.ItemVariation.name())) {
-            		secondary.append(temp);
+            		secondary.append(item.get(indKey).s());
             	}
-                tempMap.put(indKey, temp);               
+                tempMap.put(indKey, item.get(indKey).s());               
             }
             tempMap.put("Purchase", new Link("http://localhost:8080/store/purchaseItem/"+partition.append(secondary)).getHref());
             partition.setLength(0);
@@ -93,7 +93,7 @@ public class DynamoDbConnection {
 		attribute.clear();
 		attribute.put(ItemKeys.BakedItem.name(), AttributeValue.builder().s(revisedItem.get("category")).build());
 		attribute.put("ItemVariation", AttributeValue.builder().s(timeMade.toString()).build());
-		attribute.put("ExpirationDate", AttributeValue.builder().s(expired.toString()).build());
+		attribute.put("ExpirationTime", AttributeValue.builder().s(expired.toString()).build());
 		revisedItem.remove("category");
 		revisedItem.remove("expirationTime");
 		for (Map.Entry<String, String> pair : revisedItem.entrySet()) {
