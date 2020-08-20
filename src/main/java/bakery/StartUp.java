@@ -6,13 +6,15 @@ import org.springframework.boot.autoconfigure.security.servlet.WebSecurityEnable
 import org.springframework.cache.annotation.EnableCaching;
 
 
+
 @EnableCaching
 @SpringBootApplication
-public class StartUp /* extends WebSecurityEnablerConfiguration */{
+public class StartUp extends WebSecurityEnablerConfiguration {
     public static void main(String[] args){
         SpringApplication.run(StartUp.class, args);
     }
     
+
   
 }
  

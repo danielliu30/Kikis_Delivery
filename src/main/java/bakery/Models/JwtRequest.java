@@ -2,18 +2,22 @@ package bakery.Models;
 
 import java.io.Serializable;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class JwtRequest implements Serializable {
+public class JwtRequest{
+	
 	@JsonProperty
 	private String userName;
 	@JsonProperty
 	private String password;
 	
+	@JsonIgnore
 	public String getUserName() {
 		return userName;
 	}
 	
+	@JsonIgnore
 	public String getPassword() {
 		return password;
 	}

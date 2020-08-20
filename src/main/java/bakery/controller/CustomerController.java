@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import bakery.Models.JwtRequest;
 
 import bakery.Services.BakedFormation;
+import bakery.Services.Security.TokenUtil;
 
 /**
  * End points for customers to access
@@ -22,20 +23,20 @@ public class CustomerController {
 
 	private static BakedFormation bakedFormation;
 	
-//	@Autowired
-//	private TokenUtil tokenUtil;
-//	
+	@Autowired
+	private TokenUtil tokenUtil;
+	
 	
 	private CustomerController(BakedFormation bakedFormation) {
 		CustomerController.bakedFormation = bakedFormation;
 	}
 
-//	@RequestMapping(method = RequestMethod.POST, path = "/createAccount")
-//	public String CreateAccount(@RequestBody JwtRequest customer) {
-//		
-//		//add some sort of error handling for this
-//		return tokenUtil.generateToken(customer.getUserName());
-//	}
+	@RequestMapping(method = RequestMethod.POST, path = "/createAccount")
+	public String CreateAccount(@RequestBody JwtRequest customer) {
+		
+		//add some sort of error handling for this
+		return tokenUtil.generateToken(customer.getUserName());
+	}
 
 	//validiation is taken care of in the RequestFilter
 	//NEed to add more validation for the sign in portion
