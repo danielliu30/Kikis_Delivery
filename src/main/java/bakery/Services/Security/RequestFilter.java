@@ -29,11 +29,9 @@ public class RequestFilter extends OncePerRequestFilter {
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		UserDetails userDetails = new User("test","pword", new ArrayList<>());
-		// if(request.getMethod().equals("OPTIONS")){
-		// 	response.setStatus(HttpServletResponse.SC_OK);
-		// }
+		
+		UserDetails userDetails = new User("bonk","pword", new ArrayList<>());
+		
 		if(!(request.getHeader("Authorization")==null)) {
 			if (jwtTokenUtil.validateToken(request.getHeader("Authorization"))) {
 				UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(

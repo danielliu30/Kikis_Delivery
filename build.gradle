@@ -34,5 +34,8 @@ dependencies {
 	compile group: 'org.springframework.security', name: 'spring-security-web', version: '5.0.6.RELEASE'
 	// https://mvnrepository.com/artifact/javax.xml.bind/jaxb-api
     compile group: 'javax.xml.bind', name: 'jaxb-api', version: '2.2.4'
+    // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-mail
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-mail', version: '2.2.6.RELEASE'
+
 
 }

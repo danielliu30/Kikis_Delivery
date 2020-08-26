@@ -10,6 +10,7 @@ import bakery.Models.SingleCustomer;
 import org.springframework.hateoas.Link;
 import org.springframework.stereotype.Service;
 
+import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.regions.PartitionMetadata;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
@@ -26,16 +27,16 @@ import java.util.*;
  *
  */
 @Service
-public class DynamoDbConnection {
+class DynamoDbConnection {
 
     private static final DynamoDbClient client = DynamoDbClient.builder().region(Region.US_EAST_1).build();
-//    private static final DynamoDbEnhancedClient enahancedClient = DynamoDbEnhancedClient.builder().dynamoDbClient(client).build();
+    // private static final DynamoDbEnhancedClient enahancedClient = DynamoDbEnhancedClient.builder().dynamoDbClient(client).build();
     private static final Gson gson = new Gson();
 
     private static HashMap<String, AttributeValue> attribute = new HashMap<>();
 																																																																																																																																																																																																																																																			   private enum ItemKeys{Id, Component, AvailableGoods, BakedItem, Variation}
-    private enum Tables{BakedGoods, StoreFront, Customers}
-    private enum Keys{BakedItem, ItemVariation}
+    private enum Tables{BakedGoods, StoreFront, Customers, ValidationTokens}
+    private enum Keys{BakedItem, ItemVariation, TokenId, email}
 
     private DynamoDbConnection(){
     }
@@ -210,23 +211,39 @@ public class DynamoDbConnection {
 		
 		return "Successfully deleted";
 	}
-//
-//    private void makeUpdateRequest(Map<String, AttributeValueUpdate> updatedValues){
-//        try{
-//            UpdateItemRequest request = UpdateItemRequest.builder()
-//                    .tableName(Tables.StoreFront.name())
-//                    .key(attribute)
-//                    .updateExpression("Baked")
-//                    .attributeUpdates(updatedValues)
-//                    .build();
-//            client.updateItem(request);
-//        }catch (ResourceNotFoundException e) {
-//            System.err.println(e.getMessage());
-//            System.exit(1);
-//        } catch (DynamoDbException e) {
-//            System.err.println(e.getMessage());
-//            System.exit(1);
-//        }
-//    }
+
+	void add24HrValidationToken(String token){
+		attribute.clear();
+		attribute.put(Keys.TokenId.name(), AttributeValue.builder().s(token).build());
+		attribute.put("Expiration", AttributeValue.builder().s(LocalDateTime.now().plusHours(24).toString()).build());
+
+		PutItemRequest request = PutItemRequest.builder()
+			.tableName(Tables.ValidationTokens.name())
+			.item(attribute)
+			.build();
+
+		try{
+			client.putItem(request);
+		}catch(DynamoDbException e){
+			//do error check
+		}
+	}
+
+	boolean checkIfUserExist(SingleCustomer customer){
+		attribute.clear();
+		attribute.put(Keys.email.name(), AttributeValue.builder().s(customer.getEmail()).build());
+		GetItemResponse response = null;
+		GetItemRequest request = GetItemRequest.builder()
+			.key(attribute)
+			.tableName(Tables.Customers.name())
+			.build();
+
+		try{
+			response = client.getItem(request);
+			return true;
+		}catch(DynamoDbException e){
+			return false;
+		}
+	}
 
 }

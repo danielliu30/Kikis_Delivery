@@ -1,6 +1,7 @@
 package bakery.Models;
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -16,4 +17,9 @@ public class SingleCustomer {
 	private String member;
 	@JsonProperty
 	private String updated = LocalDateTime.now().toString(); 
+
+	@JsonIgnore
+	public String getEmail(){
+		return email;
+	}
 }

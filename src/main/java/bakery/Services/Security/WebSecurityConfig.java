@@ -43,16 +43,4 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
     }
-
-    //currently using antmatchers to allow all OPTIONS request up above, but that is supposdely bad practice but currently using the corsmapping is working so this will do for now
-    // @Bean
-    // @Order(Ordered.HIGHEST_PRECEDENCE)
-    // public WebMvcConfigurer corsConfigurer(){
-    //     return new WebMvcConfigurer(){
-    //         @Override
-    //         public void addCorsMappings(CorsRegistry registry){
-    //             registry.addMapping("/**").allowedOrigins("*").allowedMethods("OPTIONS");
-    //         }
-    //     };
-    // }
 }

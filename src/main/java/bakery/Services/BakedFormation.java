@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -107,5 +108,16 @@ public class BakedFormation {
     
 	public void deleteStoreItem(String partitionKey, String keyValue) {
 		dbConnection.deleteBakedItem(partitionKey, keyValue);
-	}
+    }
+    
+    public String genreateValidationToken(){
+        String token = UUID.randomUUID().toString(); 
+        dbConnection.add24HrValidationToken(token);
+        return token;
+    }
+
+    public boolean checkExisitingUser(SingleCustomer customer){
+        return dbConnection.checkIfUserExist(customer);
+    }
+
 }

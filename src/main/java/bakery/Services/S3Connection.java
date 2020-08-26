@@ -23,7 +23,7 @@ import java.util.Set;
 
 
 @Service
-public class S3Connection {
+class S3Connection {
     private final static S3Client client = S3Client.builder().region(Region.US_EAST_2).build();
     private final String path = "C:\\Users\\barney\\IdeaProjects\\bakery.bakeshop\\src\\main\\resources\\s3CategoryList.json";
     
