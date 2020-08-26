@@ -39,6 +39,7 @@ public class BakedItem {
 	@JsonProperty
 	private String expirationTime;
 
+	//jenkins test comment
 	@JsonIgnore
 	public int getExpirationTime() {
 		return Integer.parseInt(expirationTime);
