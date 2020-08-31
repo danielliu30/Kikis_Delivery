@@ -112,11 +112,13 @@ public class StoreController {
         return ResponseEntity.ok().cacheControl(defaultCache).body(bakedFormation.getAllCustomers());
     }
 
+    //will get rid of item bought based on its creation time
     @GetMapping("/purchaseItem/{category}/{timeStamp}")
     private void purchasedItem(@PathVariable String category, @PathVariable String timeStamp) {
         bakedFormation.deleteStoreItem(category, timeStamp);
     }
 
+    //delete customer. May need to change.
     @PostMapping("/deleteCustomer/{key}/{value}")
     private void deleteCustomer(@PathVariable String key, @PathVariable String value) {
         bakedFormation.deleteCustomer(key, value);

@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-
+//May merge with JWTRequest. 
 @JsonInclude(Include.NON_NULL)
 public class SingleCustomer {
 	@JsonProperty

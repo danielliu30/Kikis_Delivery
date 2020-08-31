@@ -1,17 +1,15 @@
 package bakery.Services;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.hateoas.Link;
-import org.springframework.hateoas.Links;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -29,15 +27,17 @@ public class BakedFormation {
 
 
 	private final DynamoDbConnection dbConnection;
-	private final S3Connection s3Connection;
+    private final S3Connection s3Connection;
+    private final EmailConnection emailConnection;
 	private static final Gson gson = new Gson();
 
     private final String baseURL = "http://localhost:8080/store/";
 	//needed to change privacy from private due to runtime error with @cacheable
 	@Autowired
-    BakedFormation(DynamoDbConnection dbConnection, S3Connection s3Connection){
+    BakedFormation(DynamoDbConnection dbConnection, S3Connection s3Connection, EmailConnection emailConnection){
         this.dbConnection = dbConnection;
         this.s3Connection = s3Connection;
+        this.emailConnection = emailConnection;
     }
 
 	/**
@@ -94,8 +94,9 @@ public class BakedFormation {
     }
     
     public void addCustomer(SingleCustomer customer) throws JsonProcessingException{
-    	//validate email
-    	dbConnection.addCustomerMember(customer);
+        //validate email
+        //currently only allowing the validation of users to be added as acustomer 
+    	//dbConnection.addCustomerMember(customer);
     }
     
     public String getAllCustomers() {    	
@@ -110,14 +111,22 @@ public class BakedFormation {
 		dbConnection.deleteBakedItem(partitionKey, keyValue);
     }
     
-    public String genreateValidationToken(){
+    public String genreateValidationToken(SingleCustomer customer){
         String token = UUID.randomUUID().toString(); 
-        dbConnection.add24HrValidationToken(token);
+        dbConnection.add24HrValidationToken(token, customer);
         return token;
     }
 
     public boolean checkExisitingUser(SingleCustomer customer){
         return dbConnection.checkIfUserExist(customer);
+    }
+
+    public void sendVerificationToken(String token, String email){
+        emailConnection.sendEmailToken(token, email);
+    }
+
+    public void checkValidationToken(String token){
+        dbConnection.verifyToken(token);
     }
 
 }

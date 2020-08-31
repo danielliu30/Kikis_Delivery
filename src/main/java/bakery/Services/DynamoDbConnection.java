@@ -10,8 +10,6 @@ import bakery.Models.SingleCustomer;
 import org.springframework.hateoas.Link;
 import org.springframework.stereotype.Service;
 
-import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
-import software.amazon.awssdk.regions.PartitionMetadata;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.*;
@@ -32,7 +30,7 @@ class DynamoDbConnection {
     private static final DynamoDbClient client = DynamoDbClient.builder().region(Region.US_EAST_1).build();
     // private static final DynamoDbEnhancedClient enahancedClient = DynamoDbEnhancedClient.builder().dynamoDbClient(client).build();
     private static final Gson gson = new Gson();
-
+	private static HashMap<String, SingleCustomer> uncheckedUsers = new HashMap<>();
     private static HashMap<String, AttributeValue> attribute = new HashMap<>();
 																																																																																																																																																																																																																																																			   private enum ItemKeys{Id, Component, AvailableGoods, BakedItem, Variation}
     private enum Tables{BakedGoods, StoreFront, Customers, ValidationTokens}
@@ -119,7 +117,7 @@ class DynamoDbConnection {
     }
 
     //need POST req to be json
-    String addCustomerMember(SingleCustomer customer) throws JsonProcessingException{
+    private String addCustomerMember(SingleCustomer customer) throws JsonProcessingException{
     	ObjectMapper obj = new ObjectMapper();
 		Map<String, String> revisedItem = gson.fromJson(obj.writeValueAsString(customer), Map.class);
         attribute.clear();
@@ -212,7 +210,8 @@ class DynamoDbConnection {
 		return "Successfully deleted";
 	}
 
-	void add24HrValidationToken(String token){
+	void add24HrValidationToken(String token, SingleCustomer customer){
+		uncheckedUsers.put(token, customer);
 		attribute.clear();
 		attribute.put(Keys.TokenId.name(), AttributeValue.builder().s(token).build());
 		attribute.put("Expiration", AttributeValue.builder().s(LocalDateTime.now().plusHours(24).toString()).build());
@@ -229,19 +228,42 @@ class DynamoDbConnection {
 		}
 	}
 
+	void verifyToken(String token){
+		attribute.clear();
+		attribute.put(Keys.TokenId.name(), AttributeValue.builder().s(token).build());
+		GetItemResponse response = null;
+		GetItemRequest request = GetItemRequest.builder()
+			.key(attribute)
+			.tableName(Tables.ValidationTokens.name())
+			.build();
+		try {
+			response = client.getItem(request);
+		} catch (Exception e) {
+		}
+		if(LocalDateTime.parse(response.item().get("Expiration").s()).isAfter(LocalDateTime.now())){
+			//token is expired
+		}else{
+			try {
+				addCustomerMember(uncheckedUsers.get(token));
+			} catch (JsonProcessingException e) {
+				e.printStackTrace();
+			}
+		}
+		
+	}
 	boolean checkIfUserExist(SingleCustomer customer){
 		attribute.clear();
 		attribute.put(Keys.email.name(), AttributeValue.builder().s(customer.getEmail()).build());
-		GetItemResponse response = null;
 		GetItemRequest request = GetItemRequest.builder()
 			.key(attribute)
 			.tableName(Tables.Customers.name())
 			.build();
 
 		try{
-			response = client.getItem(request);
+			client.getItem(request);
 			return true;
 		}catch(DynamoDbException e){
+			uncheckedUsers.put(customer.getEmail(), customer);
 			return false;
 		}
 	}
