@@ -37,15 +37,16 @@ public class RequestFilter extends OncePerRequestFilter {
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
-		
+		//Need to get username from the jwt token. Consult tut for it
 		//read body(user) from incoming request. 
 		//can consider adding level of authority
+		//JwtRequest person = gson.fromJson(new BufferedReader(new InputStreamReader(request.getInputStream())), JwtRequest.class);
+		
+		//the arraylist holds the level of authorization. Right now its empty
+		UserDetails userDetails = new User("test","test",new ArrayList<>());
 		if(!(request.getHeader("Authorization")==null)) {
 			if (jwtTokenUtil.validateToken(request.getHeader("Authorization"))) {
-				JwtRequest person = gson.fromJson(new BufferedReader(new InputStreamReader(request.getInputStream())), JwtRequest.class);
-		
-				//the arraylist holds the level of authorization. Right now its empty
-				UserDetails userDetails = new User(person.getUserName(),person.getPassword(),new ArrayList<>());
+			
 		
 				UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
 						userDetails, null, userDetails.getAuthorities());
