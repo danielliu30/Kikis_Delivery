@@ -256,12 +256,13 @@ class DynamoDbConnection {
 		attribute.put(Keys.email.name(), AttributeValue.builder().s(customer.getEmail()).build());
 		GetItemRequest request = GetItemRequest.builder()
 			.key(attribute)
+
 			.tableName(Tables.Customers.name())
 			.build();
 
 		try{
-			client.getItem(request);
-			return true;
+			GetItemResponse response= client.getItem(request);
+			return response.hasItem();
 		}catch(DynamoDbException e){
 			uncheckedUsers.put(customer.getEmail(), customer);
 			return false;
