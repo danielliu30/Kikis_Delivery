@@ -228,7 +228,7 @@ class DynamoDbConnection {
 		}
 	}
 
-	void verifyToken(String token){
+	Boolean verifyToken(String token){
 		attribute.clear();
 		attribute.put(Keys.TokenId.name(), AttributeValue.builder().s(token).build());
 		GetItemResponse response = null;
@@ -242,12 +242,14 @@ class DynamoDbConnection {
 		}
 		if(LocalDateTime.parse(response.item().get("Expiration").s()).isAfter(LocalDateTime.now())){
 			//token is expired
+			return false;
 		}else{
 			try {
 				addCustomerMember(uncheckedUsers.get(token));
 			} catch (JsonProcessingException e) {
 				e.printStackTrace();
 			}
+			return true;
 		}
 		
 	}

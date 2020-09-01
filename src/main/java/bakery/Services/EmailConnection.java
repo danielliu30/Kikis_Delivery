@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 class EmailConnection {
 
     private static final JavaMailSender sender = getJavaMailSender();
-    private final String BASE_URL = "http://localhost:8080/store/verifieedToken-";
+    private final String BASE_URL = "http://localhost:3000/Verified/";
     private final String VERIFICATION = "Verification Token";
 
     private EmailConnection() {

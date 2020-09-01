@@ -125,8 +125,8 @@ public class BakedFormation {
         emailConnection.sendEmailToken(token, email);
     }
 
-    public void checkValidationToken(String token){
-        dbConnection.verifyToken(token);
+    public Boolean checkValidationToken(String token){
+        return(dbConnection.verifyToken(token));
     }
 
 }
