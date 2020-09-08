@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import bakery.Models.JwtRequest;
 import bakery.Models.SingleCustomer;
 import bakery.Services.BakedFormation;
 import bakery.Services.Security.TokenUtil;
@@ -25,31 +24,32 @@ import bakery.Services.Security.TokenUtil;
 @RequestMapping("/customer")
 public class CustomerController {
 
+	//why dont I inject via constructor???????
 	@Autowired
 	private static BakedFormation bakedFormation;
 	
 	@Autowired
 	private TokenUtil tokenUtil;
 	
-	
 	private CustomerController(BakedFormation bakedFormation) {
 		CustomerController.bakedFormation = bakedFormation;
 	}
 
 	//generates JWT when sign in
-	@CrossOrigin(origins = "http://localhost:3000")
 	@RequestMapping(method = RequestMethod.POST, path = "/signIn")
-	public String LoginAccount(@RequestBody JwtRequest customer) {
-		return tokenUtil.generateToken(customer.getUserName());
+	public String LoginAccount(@RequestBody SingleCustomer customer) {
+		return tokenUtil.generateToken(customer.getEmail());
 	}
 
 	//generates account confirmation via email
 	@RequestMapping(method = RequestMethod.POST, path = "/signUp")
-	public void CreateAccount(@RequestBody SingleCustomer customer){
+	public Boolean CreateAccount(@RequestBody SingleCustomer customer){
 		if(!bakedFormation.checkExisitingUser(customer)){
 			bakedFormation.sendVerificationToken(bakedFormation.genreateValidationToken(customer), customer.getEmail());
 			//send email
+			return true;
 		}
+		return false;
 	}
 
 	//end point for users to hit when they are validatin via email.
@@ -60,5 +60,4 @@ public class CustomerController {
 	}
 	// validiation is taken care of in the RequestFilter
 	// NEed to add more validation for the sign in portion
-
 }

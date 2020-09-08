@@ -32,6 +32,7 @@ public class BakedFormation {
 	private static final Gson gson = new Gson();
 
     private final String baseURL = "http://localhost:8080/store/";
+    
 	//needed to change privacy from private due to runtime error with @cacheable
 	@Autowired
     BakedFormation(DynamoDbConnection dbConnection, S3Connection s3Connection, EmailConnection emailConnection){

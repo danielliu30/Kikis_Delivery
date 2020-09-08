@@ -43,8 +43,6 @@ public class StoreController {
      * 
      * @return a string in JSON format
      */
-
-    @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping("")
     public ResponseEntity<String> Index() {
 
@@ -57,7 +55,6 @@ public class StoreController {
      * @param category specific group to be selected
      * @return a String in JSON format
      */
-    @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping("/{category}")
     public ResponseEntity<String> getCategoryList(@PathVariable String category) {
         return ResponseEntity.ok().cacheControl(defaultCache).body(bakedFormation.getAvailableBakedItems(category));

@@ -57,8 +57,8 @@ class S3Connection {
 
         }
     }
-    Map<String, List<String>> retrieveCategoryList(){
-             
+
+    Map<String, List<String>> retrieveCategoryList(){       
     	ResponseInputStream<GetObjectResponse> object = null;
 		try {
 			
@@ -71,6 +71,7 @@ class S3Connection {
 		Map<String,List<String>> test = gson.fromJson(reader, Map.class);
         return test;
     }
+
     void createBucket(){
         try{
             CreateBucketRequest createBucketRequest = CreateBucketRequest
@@ -89,7 +90,7 @@ class S3Connection {
 
     }
 
-    public void deleteBucket() {
+    void deleteBucket() {
         DeleteBucketRequest deleteBucketRequest = DeleteBucketRequest.builder().bucket("ris-tester").build();
         client.deleteBucket(deleteBucketRequest);
     }

@@ -100,7 +100,6 @@ class DynamoDbConnection {
 			attribute.put(pair.getKey(), AttributeValue.builder().s(pair.getValue()).build());
 
 		}
-
 				
 		PutItemRequest request = PutItemRequest.builder()
 		         .tableName(Tables.BakedGoods.name())
@@ -110,13 +109,9 @@ class DynamoDbConnection {
 		try {
 			client.putItem(request);
 		} catch (DynamoDbException e) {
-
 		}
-
-
     }
 
-    //need POST req to be json
     private String addCustomerMember(SingleCustomer customer) throws JsonProcessingException{
     	ObjectMapper obj = new ObjectMapper();
 		Map<String, String> revisedItem = gson.fromJson(obj.writeValueAsString(customer), Map.class);
@@ -125,9 +120,7 @@ class DynamoDbConnection {
         for (Map.Entry<String, String> pair : revisedItem.entrySet()) {
         	attribute.put(pair.getKey(), AttributeValue.builder().s(pair.getValue()).build());
         }
-        //add reward card
-
-
+        
         PutItemRequest request = PutItemRequest.builder()
                 .tableName(Tables.Customers.name())
                 .item(attribute)
@@ -138,10 +131,8 @@ class DynamoDbConnection {
         }catch (DynamoDbException e){
             return e.getMessage();
         }
-
         return "Successfully added customer";
     }
-
 
     List<Map<String,String>> getCustomerList(){
        ScanResponse response;
@@ -171,7 +162,6 @@ class DynamoDbConnection {
         return result;
     }
 
-    
 	String deleteBakedItem(String category, String timeStamp) {
 		attribute.clear();
 		attribute.put(Keys.BakedItem.name(), AttributeValue.builder().s(category).build());
@@ -186,8 +176,7 @@ class DynamoDbConnection {
 		}catch(DynamoDbException e) {
 			//do some logging
 			return "failed";
-		}
-		
+		}	
 		return "Successfully deleted";
 	}
 
@@ -206,7 +195,6 @@ class DynamoDbConnection {
 			//do some logging
 			return "failed";
 		}
-		
 		return "Successfully deleted";
 	}
 
@@ -239,20 +227,23 @@ class DynamoDbConnection {
 		try {
 			response = client.getItem(request);
 		} catch (Exception e) {
+			e.getLocalizedMessage();
 		}
-		if(LocalDateTime.parse(response.item().get("Expiration").s()).isAfter(LocalDateTime.now())){
-			//token is expired
+		if(response.item().isEmpty()){
 			return false;
 		}else{
-			try {
-				addCustomerMember(uncheckedUsers.get(token));
-			} catch (JsonProcessingException e) {
-				e.printStackTrace();
+			if(LocalDateTime.parse(response.item().get("Expiration").s()).isAfter(LocalDateTime.now())){
+				try {
+					addCustomerMember(uncheckedUsers.get(token));
+				} catch (JsonProcessingException e) {
+					e.printStackTrace();
+				}
+				return true;
 			}
-			return true;
+			return false;
 		}
-		
 	}
+
 	boolean checkIfUserExist(SingleCustomer customer){
 		attribute.clear();
 		attribute.put(Keys.email.name(), AttributeValue.builder().s(customer.getEmail()).build());
@@ -270,5 +261,4 @@ class DynamoDbConnection {
 			return false;
 		}
 	}
-
 }

@@ -13,8 +13,5 @@ public class StartUp extends WebSecurityEnablerConfiguration {
     public static void main(String[] args){
         SpringApplication.run(StartUp.class, args);
     }
-    
-
-  
 }
  
