@@ -12,6 +12,8 @@ public class JwtRequest{
 	
 	@JsonIgnore
 	public String getUserName() {
+		//test
+		String s = null;
 		return userName;
 	}
 	
