@@ -38,10 +38,11 @@ public class RequestFilter extends OncePerRequestFilter {
 		//JwtRequest person = gson.fromJson(new BufferedReader(new InputStreamReader(request.getInputStream())), JwtRequest.class);
 		
 		//the arraylist holds the level of authorization. Right now its empty
-		
+		String requestToken = request.getHeader("Authorization");
 		if(!(request.getHeader("Authorization")==null)) {
-			if (jwtTokenUtil.validateToken(request.getHeader("Authorization"))) {
-				String test = request.getReader().readLine();
+			String userName = jwtTokenUtil.getUsernameFromToken(requestToken);
+			if (jwtTokenUtil.validateToken(requestToken)) {
+				//check DynamoDb for username
 				UserDetails userDetails = new User("test","test",new ArrayList<>());
 				UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
 						userDetails, null, userDetails.getAuthorities());

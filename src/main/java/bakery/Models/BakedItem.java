@@ -38,7 +38,7 @@ public class BakedItem {
 	private String glutenFree;
 	@JsonProperty
 	private String expirationTime;
-
+	
 	//jenkins test comment
 	@JsonIgnore
 	public int getExpirationTime() {

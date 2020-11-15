@@ -12,6 +12,8 @@ public class SingleCustomer {
 	@JsonProperty
 	private String email;
 	@JsonProperty
+	private String password;
+	@JsonProperty
 	private String name;
 	@JsonProperty
 	private String member;
@@ -21,5 +23,10 @@ public class SingleCustomer {
 	@JsonIgnore
 	public String getEmail(){
 		return email;
+	}
+
+	@JsonIgnore
+	public String getPassWord(){
+		return password;
 	}
 }

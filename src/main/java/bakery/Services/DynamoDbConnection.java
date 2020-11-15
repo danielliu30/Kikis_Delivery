@@ -5,8 +5,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 
 import bakery.Models.BakedItem;
+import bakery.Models.PurchasedItem;
 import bakery.Models.SingleCustomer;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
 import org.springframework.stereotype.Service;
 
@@ -15,80 +17,98 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.*;
 import software.amazon.awssdk.services.dynamodb.paginators.ScanIterable;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.time.LocalDateTime;
 import java.util.*;
 
 /**
- * This is creates a connection between the applicationa and aws DynamoDB
- * it allows the read and write of data for customers and store items
+ * This is creates a connection between the applicationa and aws DynamoDB it
+ * allows the read and write of data for customers and store items
+ * 
  * @author barney
  *
  */
 @Service
 class DynamoDbConnection {
 
-    private static final DynamoDbClient client = DynamoDbClient.builder().region(Region.US_EAST_1).build();
-    // private static final DynamoDbEnhancedClient enahancedClient = DynamoDbEnhancedClient.builder().dynamoDbClient(client).build();
-    private static final Gson gson = new Gson();
+	private static final DynamoDbClient client = DynamoDbClient.builder().region(Region.US_EAST_1).build();
+	// private static final DynamoDbEnhancedClient enahancedClient =
+	// DynamoDbEnhancedClient.builder().dynamoDbClient(client).build();
+	private static final Gson gson = new Gson();
 	private static HashMap<String, SingleCustomer> uncheckedUsers = new HashMap<>();
-    private static HashMap<String, AttributeValue> attribute = new HashMap<>();
-																																																																																																																																																																																																																																																			   private enum ItemKeys{Id, Component, AvailableGoods, BakedItem, Variation}
-    private enum Tables{BakedGoods, StoreFront, Customers, ValidationTokens}
-    private enum Keys{BakedItem, ItemVariation, TokenId, email}
+	private static HashMap<String, AttributeValue> attribute = new HashMap<>();
 
-    private DynamoDbConnection(){
-    }
+	private enum ItemKeys {
+		Id, Component, AvailableGoods, BakedItem, Variation
+	}
 
-    /**
-     * 
-     * @param category
-     * @return
-     */
-    //may only be used for getting a single item. Will want to batch fetch when getting larger list
-    List<Map<String,String>> getBakedGoodCategoryList(String category){
-    	List<Map<String,String>> result = new LinkedList<>();
-    	ScanIterable response = null;
-    	StringBuilder partition = new StringBuilder();
-    	StringBuilder secondary = new StringBuilder();
-    	ScanRequest request = ScanRequest.builder()
-    			.tableName(Tables.BakedGoods.name())
-    			.filterExpression("BakedItem = :bakedItem")
-    			.expressionAttributeValues(
-    					Collections.singletonMap(":bakedItem", AttributeValue.builder().s(category).build()))
-    			.build();
-    		
-    	try {
-    		response = client.scanPaginator(request);	
-    	}catch(Exception e) {
-    		
-    	}
-    	for (Map<String, AttributeValue> item: response.items()){
-            Map<String, String> tempMap = new HashMap<>();
-            for (String indKey : item.keySet()) {
-//            	String str = item.get(indKey).toString();
-//            	String temp = str.toString().substring(str.indexOf("S=")+2, str.indexOf(", "));
-            	if(indKey.equals(Keys.BakedItem.name())) {
-            		partition.append(item.get(indKey).s()+"/");
-            	}else if(indKey.equals(Keys.ItemVariation.name())) {
-            		secondary.append(item.get(indKey).s());
-            	}
-                tempMap.put(indKey, item.get(indKey).s());               
-            }
-            tempMap.put("Purchase", new Link("http://localhost:8080/store/purchaseItem/"+partition.append(secondary)).getHref());
-            partition.setLength(0);
-            secondary.setLength(0);
-            result.add(tempMap);
-        }
-        return result;
-    }
+	private enum Tables {
+		BakedGoods, StoreFront, Customers, ValidationTokens
+	}
 
-    //want to revise how we actually build the item's attribute
-    void addAvailableBakedGoods(BakedItem item) throws JsonProcessingException  {
+	private enum Keys {
+		BakedItem, ItemVariation, TokenId, email
+	}
+
+	private DynamoSecurity secureDb;
+
+	@Autowired
+	private DynamoDbConnection(DynamoSecurity secureDb) {
+		this.secureDb = secureDb;
+	}
+
+	/**
+	 * 
+	 * @param category
+	 * @return
+	 */
+	// may only be used for getting a single item. Will want to batch fetch when
+	// getting larger list
+	List<Map<String, String>> getBakedGoodCategoryList(String category) {
+		List<Map<String, String>> result = new LinkedList<>();
+		ScanIterable response = null;
+		StringBuilder partition = new StringBuilder();
+		StringBuilder secondary = new StringBuilder();
+		ScanRequest request = ScanRequest.builder().tableName(Tables.BakedGoods.name())
+				.filterExpression("BakedItem = :bakedItem").expressionAttributeValues(
+						Collections.singletonMap(":bakedItem", AttributeValue.builder().s(category).build()))
+				.build();
+
+		try {
+			response = client.scanPaginator(request);
+		} catch (Exception e) {
+
+		}
+		for (Map<String, AttributeValue> item : response.items()) {
+			Map<String, String> tempMap = new HashMap<>();
+			for (String indKey : item.keySet()) {
+				// String str = item.get(indKey).toString();
+				// String temp = str.toString().substring(str.indexOf("S=")+2, str.indexOf(",
+				// "));
+				if (indKey.equals(Keys.BakedItem.name())) {
+					partition.append(item.get(indKey).s() + "/");
+				} else if (indKey.equals(Keys.ItemVariation.name())) {
+					secondary.append(item.get(indKey).s());
+				}
+				tempMap.put(indKey, item.get(indKey).s());
+			}
+			tempMap.put("Purchase",
+					new Link("http://localhost:8080/store/purchaseItem/" + partition.append(secondary)).getHref());
+			partition.setLength(0);
+			secondary.setLength(0);
+			result.add(tempMap);
+		}
+		return result;
+	}
+
+	// want to revise how we actually build the item's attribute
+	void addAvailableBakedGoods(BakedItem item) throws JsonProcessingException {
 		ObjectMapper obj = new ObjectMapper();
 		Map<String, String> revisedItem = gson.fromJson(obj.writeValueAsString(item), Map.class);
 		LocalDateTime timeMade = LocalDateTime.now();
 		LocalDateTime expired = timeMade.plusDays(item.getExpirationTime());
-		
+
 		attribute.clear();
 		attribute.put(ItemKeys.BakedItem.name(), AttributeValue.builder().s(revisedItem.get("category")).build());
 		attribute.put("ItemVariation", AttributeValue.builder().s(timeMade.toString()).build());
@@ -100,139 +120,162 @@ class DynamoDbConnection {
 			attribute.put(pair.getKey(), AttributeValue.builder().s(pair.getValue()).build());
 
 		}
-				
-		PutItemRequest request = PutItemRequest.builder()
-		         .tableName(Tables.BakedGoods.name())
-		         .item(attribute)
-		         .build();
+
+		PutItemRequest request = PutItemRequest.builder().tableName(Tables.BakedGoods.name()).item(attribute).build();
 
 		try {
 			client.putItem(request);
 		} catch (DynamoDbException e) {
 		}
-    }
+	}
 
-    private String addCustomerMember(SingleCustomer customer) throws JsonProcessingException{
-    	ObjectMapper obj = new ObjectMapper();
+	private String addCustomerMember(SingleCustomer customer) throws JsonProcessingException {
+		ObjectMapper obj = new ObjectMapper();
 		Map<String, String> revisedItem = gson.fromJson(obj.writeValueAsString(customer), Map.class);
-        attribute.clear();
-        
-        for (Map.Entry<String, String> pair : revisedItem.entrySet()) {
-        	attribute.put(pair.getKey(), AttributeValue.builder().s(pair.getValue()).build());
-        }
-        
-        PutItemRequest request = PutItemRequest.builder()
-                .tableName(Tables.Customers.name())
-                .item(attribute)
-                .build();
-
-        try{
-            client.putItem(request);
-        }catch (DynamoDbException e){
-            return e.getMessage();
-        }
-        return "Successfully added customer";
-    }
-
-    List<Map<String,String>> getCustomerList(){
-       ScanResponse response;
-       List<Map<String,String>> result = new LinkedList<>();
-        try{
-            ScanRequest request = ScanRequest.builder()
-                    .tableName(Tables.Customers.name())
-                    .build();
-            response = client.scan(request);
-
-            for (Map<String, AttributeValue> item: response.items()){
-                Map<String, String> tempMap = new HashMap<String, String>();
-                for (String indKey : item.keySet()) {
-                	
-                    String str = item.get(indKey).toString();
-                    String parsed = str.substring(str.indexOf("S=")+2, str.indexOf(", "));
-                    if(indKey.equals("email")) {
-                    	tempMap.put("delete", new Link("http://localhost:8080/store/deleteCustomer/"+indKey+"/"+parsed).getHref());
-                    }
-                    tempMap.put(indKey, parsed);
-                }
-                result.add(tempMap);
-            }
-        }catch (DynamoDbException e){
-            //log some error;
-        }
-        return result;
-    }
-
-	String deleteBakedItem(String category, String timeStamp) {
 		attribute.clear();
-		attribute.put(Keys.BakedItem.name(), AttributeValue.builder().s(category).build());
-		attribute.put(Keys.ItemVariation.name(), AttributeValue.builder().s(timeStamp).build());
-		DeleteItemRequest request = DeleteItemRequest.builder()
-				.tableName(Tables.BakedGoods.name())
-				.key(attribute)
-				.build();
-		
+		String encrypt = "";
+		for (Map.Entry<String, String> pair : revisedItem.entrySet()) {
+			if (pair.getKey().equals("password")) {
+				try {
+					encrypt = secureDb.encryptPassWord(pair.getValue());
+					attribute.put(pair.getKey(), AttributeValue.builder().s(encrypt).build());
+				} catch (Exception e) {
+					// unable to encrypt
+				}
+			} else {
+				attribute.put(pair.getKey(), AttributeValue.builder().s(pair.getValue()).build());
+			}
+
+		}
+
+		attribute.put("orders", AttributeValue.builder().m(new HashMap<String, AttributeValue>()).build());
+		PutItemRequest request = PutItemRequest.builder().tableName(Tables.Customers.name()).item(attribute).build();
+
 		try {
-			client.deleteItem(request);
-		}catch(DynamoDbException e) {
-			//do some logging
+			client.putItem(request);
+		} catch (DynamoDbException e) {
+			return e.getMessage();
+		}
+		return "Successfully added customer";
+	}
+
+	List<Map<String, String>> getCustomerList() {
+		ScanResponse response;
+		List<Map<String, String>> result = new LinkedList<>();
+		try {
+			ScanRequest request = ScanRequest.builder().tableName(Tables.Customers.name()).build();
+			response = client.scan(request);
+
+			for (Map<String, AttributeValue> item : response.items()) {
+				Map<String, String> tempMap = new HashMap<String, String>();
+				for (String indKey : item.keySet()) {
+
+					String str = item.get(indKey).s();
+
+					if (indKey.equals("email")) {
+						tempMap.put("delete",
+								new Link("http://localhost:8080/store/deleteCustomer/" + indKey + "/" + str).getHref());
+					}
+					tempMap.put(indKey, str);
+				}
+				result.add(tempMap);
+			}
+		} catch (DynamoDbException e) {
+			// log some error;
+		}
+		return result;
+	}
+
+	String deleteBakedItem(PurchasedItem item) {
+		attribute.clear();
+		attribute.put(Keys.BakedItem.name(), AttributeValue.builder().s(item.category).build());
+		attribute.put(Keys.ItemVariation.name(), AttributeValue.builder().s(item.timeStampCreated).build());
+
+		DeleteItemRequest request = DeleteItemRequest.builder().tableName(Tables.BakedGoods.name()).key(attribute)
+				.returnValues(ReturnValue.ALL_OLD).build();
+
+		try {
+			var response = client.deleteItem(request);
+			if(response.hasAttributes()){
+				var purchasedItem = response.attributes();
+				storeCustomerHistory(purchasedItem, item);
+			}
+			
+		} catch (DynamoDbException e) {
+			// do some logging
 			return "failed";
-		}	
+		}
 		return "Successfully deleted";
+	}
+
+	private void storeCustomerHistory(Map<String, AttributeValue> purchasedItem, PurchasedItem item) {
+		attribute.clear();
+		attribute.put(Keys.email.name(), AttributeValue.builder().s(item.userName).build());
+
+		Map<String, String> hierarchy = new HashMap<>();
+		Map<String, AttributeValue> updateOrder = new HashMap<>();
+
+		updateOrder.put(":v", AttributeValue.builder().m(purchasedItem).build());
+		hierarchy.put("#k", "orders");
+		hierarchy.put("#l", item.timePurchased);
+
+		UpdateItemRequest request = UpdateItemRequest.builder().tableName(Tables.Customers.name()).key(attribute)
+				.expressionAttributeNames(hierarchy).expressionAttributeValues(updateOrder)
+				.updateExpression("set #k.#l = :v").build();
+		try {
+			client.updateItem(request);
+		} catch (DynamoDbException e) {
+			// some log
+		}
 	}
 
 	String deleteCustomer(String partitionKey, String keyValue) {
 		attribute.clear();
 		attribute.put(partitionKey, AttributeValue.builder().s(keyValue).build());
-		
-		DeleteItemRequest request = DeleteItemRequest.builder()
-				.tableName(Tables.Customers.name())
-				.key(attribute)
+
+		DeleteItemRequest request = DeleteItemRequest.builder().tableName(Tables.Customers.name()).key(attribute)
 				.build();
-		
+
 		try {
 			client.deleteItem(request);
-		}catch(DynamoDbException e) {
-			//do some logging
+		} catch (DynamoDbException e) {
+			// do some logging
 			return "failed";
 		}
 		return "Successfully deleted";
 	}
 
-	void add24HrValidationToken(String token, SingleCustomer customer){
+	void add24HrValidationToken(String token, SingleCustomer customer) {
 		uncheckedUsers.put(token, customer);
 		attribute.clear();
 		attribute.put(Keys.TokenId.name(), AttributeValue.builder().s(token).build());
 		attribute.put("Expiration", AttributeValue.builder().s(LocalDateTime.now().plusHours(24).toString()).build());
 
-		PutItemRequest request = PutItemRequest.builder()
-			.tableName(Tables.ValidationTokens.name())
-			.item(attribute)
-			.build();
+		PutItemRequest request = PutItemRequest.builder().tableName(Tables.ValidationTokens.name()).item(attribute)
+				.build();
 
-		try{
+		try {
 			client.putItem(request);
-		}catch(DynamoDbException e){
-			//do error check
+		} catch (DynamoDbException e) {
+			// do error check
 		}
 	}
 
-	Boolean verifyToken(String token){
+	Boolean verifyToken(String token) {
 		attribute.clear();
 		attribute.put(Keys.TokenId.name(), AttributeValue.builder().s(token).build());
 		GetItemResponse response = null;
-		GetItemRequest request = GetItemRequest.builder()
-			.key(attribute)
-			.tableName(Tables.ValidationTokens.name())
-			.build();
+		GetItemRequest request = GetItemRequest.builder().key(attribute).tableName(Tables.ValidationTokens.name())
+				.build();
 		try {
 			response = client.getItem(request);
 		} catch (Exception e) {
 			e.getLocalizedMessage();
 		}
-		if(response.item().isEmpty()){
+		if (response.item().isEmpty()) {
 			return false;
-		}else{
-			if(LocalDateTime.parse(response.item().get("Expiration").s()).isAfter(LocalDateTime.now())){
+		} else {
+			if (LocalDateTime.parse(response.item().get("Expiration").s()).isAfter(LocalDateTime.now())) {
 				try {
 					addCustomerMember(uncheckedUsers.get(token));
 				} catch (JsonProcessingException e) {
@@ -244,21 +287,45 @@ class DynamoDbConnection {
 		}
 	}
 
-	boolean checkIfUserExist(SingleCustomer customer){
+	boolean checkIfUserExist(SingleCustomer customer) {
 		attribute.clear();
 		attribute.put(Keys.email.name(), AttributeValue.builder().s(customer.getEmail()).build());
-		GetItemRequest request = GetItemRequest.builder()
-			.key(attribute)
+		GetItemRequest request = GetItemRequest.builder().key(attribute)
 
-			.tableName(Tables.Customers.name())
-			.build();
+				.tableName(Tables.Customers.name()).build();
 
-		try{
-			GetItemResponse response= client.getItem(request);
+		try {
+			GetItemResponse response = client.getItem(request);
 			return response.hasItem();
-		}catch(DynamoDbException e){
+		} catch (DynamoDbException e) {
 			uncheckedUsers.put(customer.getEmail(), customer);
 			return false;
 		}
+
+		// Add purchased good to associated account/user
+	}
+
+	boolean validateLogIn(SingleCustomer customer) throws NoSuchAlgorithmException, InvalidKeySpecException {
+		attribute.clear();
+		attribute.put(Keys.email.name(), AttributeValue.builder().s(customer.getEmail()).build());
+		GetItemRequest request = GetItemRequest.builder().key(attribute).tableName(Tables.Customers.name()).build();
+
+		try {
+
+			GetItemResponse response = client.getItem(request);
+			if (response.hasItem()) {
+				boolean decrypt = secureDb.validiatePassword(customer.getPassWord(),
+						response.item().get("password").s());
+				return response.hasItem() && response.item().get("email").s().equals(customer.getEmail()) && decrypt;
+			} else {
+				return false;
+			}
+
+		} catch (DynamoDbException e) {
+			uncheckedUsers.put(customer.getEmail(), customer);
+			return false;
+		}
+
+		// Add purchased good to associated account/user
 	}
 }
