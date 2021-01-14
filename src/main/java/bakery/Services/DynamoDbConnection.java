@@ -8,6 +8,8 @@ import bakery.Models.BakedItem;
 import bakery.Models.PurchasedItem;
 import bakery.Models.SingleCustomer;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
 import org.springframework.stereotype.Service;
@@ -32,6 +34,7 @@ import java.util.*;
 @Service
 class DynamoDbConnection {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(DynamoDbConnection.class);
 	private static final DynamoDbClient client = DynamoDbClient.builder().region(Region.US_EAST_1).build();
 	// private static final DynamoDbEnhancedClient enahancedClient =
 	// DynamoDbEnhancedClient.builder().dynamoDbClient(client).build();
@@ -78,7 +81,7 @@ class DynamoDbConnection {
 		try {
 			response = client.scanPaginator(request);
 		} catch (Exception e) {
-
+			LOGGER.error("Unable to find category. Category may not exist or request is invalid", e);
 		}
 		for (Map<String, AttributeValue> item : response.items()) {
 			Map<String, String> tempMap = new HashMap<>();
@@ -116,9 +119,7 @@ class DynamoDbConnection {
 		revisedItem.remove("category");
 		revisedItem.remove("expirationTime");
 		for (Map.Entry<String, String> pair : revisedItem.entrySet()) {
-
 			attribute.put(pair.getKey(), AttributeValue.builder().s(pair.getValue()).build());
-
 		}
 
 		PutItemRequest request = PutItemRequest.builder().tableName(Tables.BakedGoods.name()).item(attribute).build();
@@ -126,14 +127,15 @@ class DynamoDbConnection {
 		try {
 			client.putItem(request);
 		} catch (DynamoDbException e) {
+			LOGGER.error("Unable to add item. Item schema may be incorrect", e);
 		}
 	}
 
 	private String addCustomerMember(SingleCustomer customer) throws JsonProcessingException {
 		ObjectMapper obj = new ObjectMapper();
 		Map<String, String> revisedItem = gson.fromJson(obj.writeValueAsString(customer), Map.class);
-		attribute.clear();
 		String encrypt = "";
+		//need to rebuild this for loop is  fucking trolling
 		for (Map.Entry<String, String> pair : revisedItem.entrySet()) {
 			if (pair.getKey().equals("password")) {
 				try {
@@ -147,14 +149,13 @@ class DynamoDbConnection {
 			}
 
 		}
-
 		attribute.put("orders", AttributeValue.builder().m(new HashMap<String, AttributeValue>()).build());
 		PutItemRequest request = PutItemRequest.builder().tableName(Tables.Customers.name()).item(attribute).build();
 
 		try {
 			client.putItem(request);
 		} catch (DynamoDbException e) {
-			return e.getMessage();
+			LOGGER.error("Unable to add customer", e);
 		}
 		return "Successfully added customer";
 	}
@@ -181,30 +182,31 @@ class DynamoDbConnection {
 				result.add(tempMap);
 			}
 		} catch (DynamoDbException e) {
-			// log some error;
+			LOGGER.error("Unable to get customer List. Request is invalid", e);
 		}
 		return result;
 	}
 
-	String deleteBakedItem(PurchasedItem item) {
-		attribute.clear();
-		attribute.put(Keys.BakedItem.name(), AttributeValue.builder().s(item.category).build());
-		attribute.put(Keys.ItemVariation.name(), AttributeValue.builder().s(item.timeStampCreated).build());
+	String deleteBakedItem(PurchasedItem purchased) {
 
-		DeleteItemRequest request = DeleteItemRequest.builder().tableName(Tables.BakedGoods.name()).key(attribute)
-				.returnValues(ReturnValue.ALL_OLD).build();
+		for (BakedItem item : purchased.orderList) {
+			attribute.clear();
+			attribute.put(Keys.BakedItem.name(), AttributeValue.builder().s(item.BakedItem).build());
+			attribute.put(Keys.ItemVariation.name(), AttributeValue.builder().s(item.ItemVariation).build());
+			DeleteItemRequest request = DeleteItemRequest.builder().tableName(Tables.BakedGoods.name()).key(attribute)
+					.returnValues(ReturnValue.ALL_OLD).build();
 
-		try {
-			var response = client.deleteItem(request);
-			if(response.hasAttributes()){
-				var purchasedItem = response.attributes();
-				storeCustomerHistory(purchasedItem, item);
+			try {
+				var response = client.deleteItem(request);
+				if (response.hasAttributes()) {
+					var purchasedItem = response.attributes();
+					storeCustomerHistory(purchasedItem, purchased);
+				}
+			} catch (DynamoDbException e) {
+				LOGGER.error("Unable to delete item. May be due to incorrect schema", e);
 			}
-			
-		} catch (DynamoDbException e) {
-			// do some logging
-			return "failed";
 		}
+
 		return "Successfully deleted";
 	}
 
@@ -217,7 +219,7 @@ class DynamoDbConnection {
 
 		updateOrder.put(":v", AttributeValue.builder().m(purchasedItem).build());
 		hierarchy.put("#k", "orders");
-		hierarchy.put("#l", item.timePurchased);
+		hierarchy.put("#l", LocalDateTime.now().toString());
 
 		UpdateItemRequest request = UpdateItemRequest.builder().tableName(Tables.Customers.name()).key(attribute)
 				.expressionAttributeNames(hierarchy).expressionAttributeValues(updateOrder)
@@ -225,7 +227,7 @@ class DynamoDbConnection {
 		try {
 			client.updateItem(request);
 		} catch (DynamoDbException e) {
-			// some log
+			LOGGER.error("Unable to update history. May be incorrect schema or invalid customer", e);
 		}
 	}
 
@@ -240,7 +242,7 @@ class DynamoDbConnection {
 			client.deleteItem(request);
 		} catch (DynamoDbException e) {
 			// do some logging
-			return "failed";
+			LOGGER.error("Unable to delete customer. Customer may not exist or Request is invalid", e);;
 		}
 		return "Successfully deleted";
 	}
@@ -257,11 +259,11 @@ class DynamoDbConnection {
 		try {
 			client.putItem(request);
 		} catch (DynamoDbException e) {
-			// do error check
+			LOGGER.error("Failed to add valid token. May be a duplicate", e);
 		}
 	}
 
-	Boolean verifyToken(String token) {
+	Boolean verifyToken(String token) throws JsonProcessingException {
 		attribute.clear();
 		attribute.put(Keys.TokenId.name(), AttributeValue.builder().s(token).build());
 		GetItemResponse response = null;
@@ -270,17 +272,13 @@ class DynamoDbConnection {
 		try {
 			response = client.getItem(request);
 		} catch (Exception e) {
-			e.getLocalizedMessage();
+			LOGGER.error("Failed to verify token. Invalid request", e);
 		}
 		if (response.item().isEmpty()) {
 			return false;
 		} else {
 			if (LocalDateTime.parse(response.item().get("Expiration").s()).isAfter(LocalDateTime.now())) {
-				try {
-					addCustomerMember(uncheckedUsers.get(token));
-				} catch (JsonProcessingException e) {
-					e.printStackTrace();
-				}
+				addCustomerMember(uncheckedUsers.get(token));
 				return true;
 			}
 			return false;
@@ -291,17 +289,18 @@ class DynamoDbConnection {
 		attribute.clear();
 		attribute.put(Keys.email.name(), AttributeValue.builder().s(customer.getEmail()).build());
 		GetItemRequest request = GetItemRequest.builder().key(attribute)
-
 				.tableName(Tables.Customers.name()).build();
 
 		try {
 			GetItemResponse response = client.getItem(request);
+			if(!response.hasItem()){
+				uncheckedUsers.put(customer.getEmail(), customer);
+			}
 			return response.hasItem();
 		} catch (DynamoDbException e) {
-			uncheckedUsers.put(customer.getEmail(), customer);
-			return false;
+			LOGGER.error("Failed to check if user exists. Schema may be incorrect", e);	
 		}
-
+		return false;
 		// Add purchased good to associated account/user
 	}
 
@@ -309,7 +308,6 @@ class DynamoDbConnection {
 		attribute.clear();
 		attribute.put(Keys.email.name(), AttributeValue.builder().s(customer.getEmail()).build());
 		GetItemRequest request = GetItemRequest.builder().key(attribute).tableName(Tables.Customers.name()).build();
-
 		try {
 
 			GetItemResponse response = client.getItem(request);
@@ -318,14 +316,14 @@ class DynamoDbConnection {
 						response.item().get("password").s());
 				return response.hasItem() && response.item().get("email").s().equals(customer.getEmail()) && decrypt;
 			} else {
-				return false;
+				uncheckedUsers.put(customer.getEmail(), customer);
 			}
 
 		} catch (DynamoDbException e) {
-			uncheckedUsers.put(customer.getEmail(), customer);
-			return false;
+			
+			LOGGER.error("Unable to validate. User may not exist or schema is incorrect", e);
 		}
-
+		return false;
 		// Add purchased good to associated account/user
 	}
 }

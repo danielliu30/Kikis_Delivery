@@ -2,6 +2,9 @@ package bakery.Services;
 
 import java.util.Properties;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.mail.MailSendException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
@@ -10,6 +13,7 @@ import org.springframework.stereotype.Service;
 @Service
 class EmailConnection {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(EmailConnection.class);
     private static final JavaMailSender sender = getJavaMailSender();
     private final String BASE_URL = "http://localhost:3000/Verified/";
     private final String VERIFICATION = "Verification Token";
@@ -23,7 +27,12 @@ class EmailConnection {
         msg.setSubject(VERIFICATION);
         msg.setText(BASE_URL + token);
 
-        sender.send(msg);
+        try {
+            sender.send(msg);    
+        } catch (MailSendException e) {
+            LOGGER.error("Failed to send email. Email Config may be invalid", e);
+        }
+        
     }
 
     private static JavaMailSender getJavaMailSender() {

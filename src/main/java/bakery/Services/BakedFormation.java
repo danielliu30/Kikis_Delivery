@@ -133,8 +133,8 @@ public class BakedFormation {
         emailConnection.sendEmailToken(token, email);
     }
 
-    public Boolean checkValidationToken(String token) {
-        return (dbConnection.verifyToken(token));
+    public Boolean checkValidationToken(String token) throws JsonProcessingException {
+        return dbConnection.verifyToken(token);
     }
 
     public Boolean validateLogIn(SingleCustomer customer) throws NoSuchAlgorithmException, InvalidKeySpecException {

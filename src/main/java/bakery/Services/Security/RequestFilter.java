@@ -19,6 +19,8 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Service;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import software.amazon.awssdk.services.dynamodb.model.DynamoDbException;
+
 
 @Service
 public class RequestFilter extends OncePerRequestFilter {
@@ -43,7 +45,8 @@ public class RequestFilter extends OncePerRequestFilter {
 			String userName = jwtTokenUtil.getUsernameFromToken(requestToken);
 			if (jwtTokenUtil.validateToken(requestToken)) {
 				//check DynamoDb for username
-				UserDetails userDetails = new User("test","test",new ArrayList<>());
+
+				UserDetails userDetails = new User(userName,"test",new ArrayList<>());
 				UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
 						userDetails, null, userDetails.getAuthorities());
 				usernamePasswordAuthenticationToken
@@ -56,6 +59,15 @@ public class RequestFilter extends OncePerRequestFilter {
 			
 		}
 		filterChain.doFilter(request, response);
+	}
+
+	private UserDetails loadUserDetails(String userName){
+		try{	
+			
+		}catch(DynamoDbException e){
+			//cant find user credentials
+		}
+		return null;
 	}
 
 }

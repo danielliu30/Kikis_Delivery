@@ -3,6 +3,7 @@ package bakery.controller;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.gson.Gson;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +11,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -48,39 +51,39 @@ public class CustomerController {
 	}
 
 	// generates JWT when sign in
-	@RequestMapping(method = RequestMethod.POST, path = "/signIn")
-	public String LoginAccount(@RequestBody SingleCustomer customer, @RequestParam(required = false) String user)
-			throws NoSuchAlgorithmException, InvalidKeySpecException {
-		if(bakedFormation.validateLogIn(customer)) return gson.toJson(tokenUtil.generateToken(customer.getEmail())); 
-		return ResponseEntity.badRequest().toString();
+	@PostMapping(path = "/signIn")
+	public ResponseEntity<String> LoginAccount(@RequestBody SingleCustomer customer,
+			@RequestParam(required = false) String user) throws NoSuchAlgorithmException, InvalidKeySpecException {
+		if (bakedFormation.validateLogIn(customer))
+			return ResponseEntity.ok().body(gson.toJson(tokenUtil.generateToken(customer.getEmail())));
+		return ResponseEntity.badRequest().body(gson.toJson(false));
 	}
 
-	//generates account confirmation via email
-	@RequestMapping(method = RequestMethod.POST, path = "/signUp")
-	public Boolean CreateAccount(@RequestBody SingleCustomer customer){
-		if(!bakedFormation.checkExisitingUser(customer)){
+	// generates account confirmation via email
+	@PostMapping(path = "/signUp")
+	public ResponseEntity<Boolean> CreateAccount(@RequestBody SingleCustomer customer) {
+		if (!bakedFormation.checkExisitingUser(customer)) {
 			bakedFormation.sendVerificationToken(bakedFormation.genreateValidationToken(customer), customer.getEmail());
-			//send email
-			return true;
+			// send email
+			return ResponseEntity.ok().body(true);
 		}
-		return false;
+		return ResponseEntity.badRequest().body(false);
 	}
 
-	//end point for users to hit when they are validatin via email.
-	//made get for testing purposes
-	@RequestMapping(method = RequestMethod.GET, path="/verifiedToken-{token}")
-	public ResponseEntity<Boolean> VerifyAccount(@PathVariable String token){
+	// end point for users to hit when they are validatin via email.
+	// made get for testing purposes
+	@GetMapping(path = "/verifiedToken-{token}")
+	public ResponseEntity<Boolean> VerifyAccount(@PathVariable String token) throws JsonProcessingException {
 		return ResponseEntity.ok().body(bakedFormation.checkValidationToken(token)); 
 	}
 	// validiation is taken care of in the RequestFilter
 	// NEed to add more validation for the sign in portion
 	
 	//will get rid of item bought based on its creation time
-    @RequestMapping(method = RequestMethod.POST, path= "/purchaseItem")
+	@PostMapping(path= "/purchaseItem")
     private void purchasedItem(@RequestBody PurchasedItem item) {
         bakedFormation.deleteStoreItem(item);
 	}
-	
-	@RequestMapping(method = RequestMethod.POST, path="/")
+
 }
  

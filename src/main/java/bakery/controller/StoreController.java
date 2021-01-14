@@ -6,6 +6,7 @@ import bakery.Services.BakedFormation;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.http.CacheControl;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -55,7 +56,7 @@ public class StoreController {
      * @param category specific group to be selected
      * @return a String in JSON format
      */
-    @GetMapping("/{category}")
+    @GetMapping(path = "/{category}")
     public ResponseEntity<String> getCategoryList(@PathVariable String category) {
         return ResponseEntity.ok().cacheControl(defaultCache).body(bakedFormation.getAvailableBakedItems(category));
     }
@@ -69,14 +70,14 @@ public class StoreController {
      * @throws IOException if JSON serialization fails
      */
     // probably want to add bake item models for json mapping
-    @RequestMapping(method = RequestMethod.POST, path = "/addItem")
-    public String AddStoreItem(@RequestBody BakedItem bakedItem) throws IOException {
+    @PostMapping(path = "/addItem")
+    public ResponseEntity<String> AddStoreItem(@RequestBody BakedItem bakedItem) throws IOException {
         bakedFormation.addAvailableBakedItems(bakedItem);
-        return "Successfully Added";
+        return ResponseEntity.ok().body("item successfully added");
     }
 
     // should be post but was testing S3 operations
-    @GetMapping(value = "/upload"/* , headers = "application/json" */)
+    @GetMapping(path = "/upload"/* , headers = "application/json" */)
     public void uploadItem() {
         bakedFormation.uploadFile();
     }
@@ -87,16 +88,15 @@ public class StoreController {
      * @param customer new customer that is enrolling into system
      * @return a String to signal for the success/failure of adding a customer
      */
-    @RequestMapping(method = RequestMethod.POST, path = "/addCustomer")
-    public String addCustomer(@RequestBody SingleCustomer customer) {
+    @PostMapping(path = "/addCustomer")
+    public ResponseEntity<String> addCustomer(@RequestBody SingleCustomer customer) {
         try {
             bakedFormation.addCustomer(customer);
         } catch (Exception e) {
             // want to do the chained exception thingy
-            return e.getMessage();
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
-
-        return "Added Customer";
+        return ResponseEntity.ok().body("customer successfully added");
     }
 
     /**
@@ -104,14 +104,21 @@ public class StoreController {
      * 
      * @return a JSON String of all customers
      */
-    @GetMapping("/customerList")
+    //limit nbumber of customers returned to prevent ddos
+    @GetMapping(path = "/customerList")
     public ResponseEntity<String> getAllCustomers() {
         return ResponseEntity.ok().cacheControl(defaultCache).body(bakedFormation.getAllCustomers());
     }
 
     //delete customer. May need to change.
-    @PostMapping("/deleteCustomer/{key}/{value}")
-    private void deleteCustomer(@PathVariable String key, @PathVariable String value) {
-        bakedFormation.deleteCustomer(key, value);
+    @PostMapping(value = "/deleteCustomer/{key}/{value}")
+    private ResponseEntity<String> deleteCustomer(@PathVariable String key, @PathVariable String value) {
+        try {
+            bakedFormation.deleteCustomer(key, value);
+        } catch (Exception e) {
+            //log request
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok().body("customer successfully deleted");
     }
 }

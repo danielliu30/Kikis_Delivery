@@ -1,6 +1,7 @@
 package bakery.Models;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -14,9 +15,10 @@ public class PurchasedItem {
     @JsonProperty
     public String userName;
     @JsonProperty
-    public String category;
-    @JsonProperty
     public String timeStampCreated;
+    @JsonProperty
+    public ArrayList<BakedItem> orderList;
+
     @JsonIgnore
     public String timePurchased = LocalDateTime.now().toString();
 }

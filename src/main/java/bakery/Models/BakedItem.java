@@ -3,6 +3,10 @@ package bakery.Models;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
+import lombok.Getter;
+import lombok.Setter;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -11,33 +15,40 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @author barney
  *
  */
+
 @JsonInclude(Include.NON_NULL)
+@Getter
+@Setter
 public class BakedItem {
 
 	@JsonProperty
-	private String category;
+	public String BakedItem;
 	@JsonProperty
-	private String size;
+	public String size;
 	@JsonProperty
-	private String shape;
+	public String shape;
 	@JsonProperty
-	private String count;
+	public String count;
 	@JsonProperty
-	private String flavor;
+	public String flavor;
 	@JsonProperty
-	private String layers;
+	public String layers;
 	@JsonProperty
-	private String calories;
+	public String calories;
 	@JsonProperty
-	private String toppings;
+	public String toppings;
 	@JsonProperty
-	private String fillings;
+	public String fillings;
 	@JsonProperty
-	private String vegan;
+	public String vegan;
 	@JsonProperty
-	private String glutenFree;
+	public String glutenFree;
 	@JsonProperty
-	private String expirationTime;
+	public String expirationTime;
+	@JsonProperty
+	public String cost;
+	@JsonProperty
+	public String ItemVariation;
 	
 	//jenkins test comment
 	@JsonIgnore

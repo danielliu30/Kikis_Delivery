@@ -4,6 +4,10 @@ import java.time.LocalDateTime;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
+import lombok.Getter;
+import lombok.Setter;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 //May merge with JWTRequest. 
@@ -17,6 +21,8 @@ public class SingleCustomer {
 	private String name;
 	@JsonProperty
 	private String member;
+	@JsonProperty
+	private String admin;
 	@JsonProperty
 	private String updated = LocalDateTime.now().toString(); 
 
