@@ -17,7 +17,7 @@ public class PurchasedItem {
     @JsonProperty
     public String timeStampCreated;
     @JsonProperty
-    public ArrayList<BakedItem> orderList;
+    public ArrayList<BakedGoods> orderList;
 
     @JsonIgnore
     public String timePurchased = LocalDateTime.now().toString();

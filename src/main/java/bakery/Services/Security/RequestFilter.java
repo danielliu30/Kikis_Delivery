@@ -46,7 +46,7 @@ public class RequestFilter extends OncePerRequestFilter {
 			if (jwtTokenUtil.validateToken(requestToken)) {
 				//check DynamoDb for username
 
-				UserDetails userDetails = new User(userName,"test",new ArrayList<>());
+				UserDetails userDetails =  new User(userName,"test",new ArrayList<>());
 				UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
 						userDetails, null, userDetails.getAuthorities());
 				usernamePasswordAuthenticationToken

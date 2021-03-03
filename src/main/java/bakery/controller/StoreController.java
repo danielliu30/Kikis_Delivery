@@ -1,12 +1,11 @@
 package bakery.controller;
 
-import bakery.Models.BakedItem;
+import bakery.Models.BakedGoods;
 import bakery.Models.SingleCustomer;
 import bakery.Services.BakedFormation;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.http.CacheControl;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -71,7 +70,7 @@ public class StoreController {
      */
     // probably want to add bake item models for json mapping
     @PostMapping(path = "/addItem")
-    public ResponseEntity<String> AddStoreItem(@RequestBody BakedItem bakedItem) throws IOException {
+    public ResponseEntity<String> AddStoreItem(@RequestBody BakedGoods bakedItem) throws IOException {
         bakedFormation.addAvailableBakedItems(bakedItem);
         return ResponseEntity.ok().body("item successfully added");
     }

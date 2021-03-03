@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.gson.Gson;
 
-import bakery.Models.BakedItem;
+import bakery.Models.BakedGoods;
 import bakery.Models.PurchasedItem;
 import bakery.Models.SingleCustomer;
 
@@ -29,19 +29,21 @@ import bakery.Models.SingleCustomer;
 @Service
 public class BakedFormation {
 
-    private final DynamoDbConnection dbConnection;
+    private final DynamoDbCustomer dbConnection;
     private final S3Connection s3Connection;
     private final EmailConnection emailConnection;
+    private final DynamoMapper dbMapper;
     private static final Gson gson = new Gson();
 
     private final String baseURL = "http://localhost:8080/store/";
 
     // needed to change privacy from private due to runtime error with @cacheable
     @Autowired
-    BakedFormation(DynamoDbConnection dbConnection, S3Connection s3Connection, EmailConnection emailConnection) {
+    BakedFormation(DynamoDbCustomer dbConnection, S3Connection s3Connection, EmailConnection emailConnection, DynamoMapper dbMapper) {
         this.dbConnection = dbConnection;
         this.s3Connection = s3Connection;
         this.emailConnection = emailConnection;
+        this.dbMapper = dbMapper;
     }
 
     /**
@@ -83,8 +85,9 @@ public class BakedFormation {
      * @throws JsonProcessingException if Object can not be serialized into a JSON
      *                                 string
      */
-    public void addAvailableBakedItems(BakedItem item) throws JsonProcessingException {
-        dbConnection.addAvailableBakedGoods(item);
+    public void addAvailableBakedItems(BakedGoods item) throws JsonProcessingException {
+        //dbConnection.addAvailableBakedGoods(item);
+        dbMapper.addBakedItem(item);
     }
 
     public void uploadFile() {
@@ -142,7 +145,7 @@ public class BakedFormation {
     }
 
     //testing getters
-    public DynamoDbConnection getDynamoDbConnection(){
+    public DynamoDbCustomer getDynamoDbConnection(){
         return dbConnection;
     }
 
