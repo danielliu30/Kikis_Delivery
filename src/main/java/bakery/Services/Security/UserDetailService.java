@@ -2,9 +2,6 @@ package bakery.Services.Security;
 
 import java.util.ArrayList;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,22 +9,29 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import bakery.Models.SingleCustomer;
 import bakery.Services.BakedFormation;
 
 @Service
 public class UserDetailService implements UserDetailsService {
 
-    private static Gson gson = new Gson();
+    private final BakedFormation bakedForm;
 
     @Autowired
-    BakedFormation bakedForm;
+    public UserDetailService(BakedFormation bakedForm) {
+        this.bakedForm = bakedForm;
+    }
 
-	@Override
-	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        if(true){
-            return new User("username","password", new ArrayList<>());
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        SingleCustomer customer = new SingleCustomer();
+        customer.setEmail(username);
+
+        if (!bakedForm.checkExisitingUser(customer)) {
+            throw new UsernameNotFoundException("User not found: " + username);
         }
 
-        return null;
-	}
+        // Authorities list is empty — role-based access can be layered on here later
+        return new User(username, "", new ArrayList<>());
+    }
 }

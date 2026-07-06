@@ -144,6 +144,10 @@ public class BakedFormation {
         return dbConnection.validateLogIn(customer);
     }
 
+    public void updateTotalRevenue(double amount) {
+        dbConnection.updateTotalRevenue(amount);
+    }
+
     //testing getters
     public DynamoDbCustomer getDynamoDbConnection(){
         return dbConnection;

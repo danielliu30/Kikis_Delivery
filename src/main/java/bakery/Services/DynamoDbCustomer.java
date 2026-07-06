@@ -265,24 +265,41 @@ class DynamoDbCustomer {
 	}
 
 	Boolean verifyToken(String token) throws JsonProcessingException {
-		attribute.clear();
-		attribute.put(Keys.TokenId.name(), AttributeValue.builder().s(token).build());
+		Map<String, AttributeValue> tokenKey = new HashMap<>();
+		tokenKey.put(Keys.TokenId.name(), AttributeValue.builder().s(token).build());
+
 		GetItemResponse response = null;
-		GetItemRequest request = GetItemRequest.builder().key(attribute).tableName(Tables.ValidationTokens.name())
+		GetItemRequest request = GetItemRequest.builder().key(tokenKey).tableName(Tables.ValidationTokens.name())
 				.build();
 		try {
 			response = client.getItem(request);
 		} catch (Exception e) {
 			LOGGER.error("Failed to verify token. Invalid request", e);
 		}
-		if (response.item().isEmpty()) {
+		if (response == null || response.item().isEmpty()) {
 			return false;
-		} else {
-			if (LocalDateTime.parse(response.item().get("Expiration").s()).isAfter(LocalDateTime.now())) {
-				addCustomerMember(uncheckedUsers.get(token));
-				return true;
-			}
-			return false;
+		}
+		if (LocalDateTime.parse(response.item().get("Expiration").s()).isAfter(LocalDateTime.now())) {
+			addCustomerMember(uncheckedUsers.get(token));
+			// Delete the token so it cannot be replayed
+			deleteValidationToken(tokenKey);
+			uncheckedUsers.remove(token);
+			return true;
+		}
+		// Token expired — clean it up
+		deleteValidationToken(tokenKey);
+		return false;
+	}
+
+	private void deleteValidationToken(Map<String, AttributeValue> tokenKey) {
+		DeleteItemRequest deleteRequest = DeleteItemRequest.builder()
+				.tableName(Tables.ValidationTokens.name())
+				.key(tokenKey)
+				.build();
+		try {
+			client.deleteItem(deleteRequest);
+		} catch (DynamoDbException e) {
+			LOGGER.error("Failed to delete validation token after use", e);
 		}
 	}
 
@@ -303,6 +320,27 @@ class DynamoDbCustomer {
 		}
 		return false;
 		// Add purchased good to associated account/user
+	}
+
+	void updateTotalRevenue(double amount) {
+		Map<String, AttributeValue> key = new HashMap<>();
+		key.put("Id", AttributeValue.builder().s("TotalRevenue").build());
+
+		Map<String, AttributeValue> expressionValues = new HashMap<>();
+		expressionValues.put(":amount", AttributeValue.builder().n(String.valueOf(amount)).build());
+
+		UpdateItemRequest request = UpdateItemRequest.builder()
+				.tableName(Tables.StoreFront.name())
+				.key(key)
+				.updateExpression("ADD totalMoneyMade :amount")
+				.expressionAttributeValues(expressionValues)
+				.build();
+
+		try {
+			client.updateItem(request);
+		} catch (DynamoDbException e) {
+			LOGGER.error("Unable to update total revenue", e);
+		}
 	}
 
 	boolean validateLogIn(SingleCustomer customer) throws NoSuchAlgorithmException, InvalidKeySpecException {

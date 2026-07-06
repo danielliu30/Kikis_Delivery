@@ -21,7 +21,6 @@ import java.util.concurrent.TimeUnit;
  */
 
 @RestController
-@CrossOrigin(origins = "*")
 @RequestMapping("store")
 public class StoreController {
 
@@ -107,6 +106,16 @@ public class StoreController {
     @GetMapping(path = "/customerList")
     public ResponseEntity<String> getAllCustomers() {
         return ResponseEntity.ok().cacheControl(defaultCache).body(bakedFormation.getAllCustomers());
+    }
+
+    @PostMapping(path = "/updateRevenue/{amount}")
+    public ResponseEntity<String> updateTotalRevenue(@PathVariable double amount) {
+        try {
+            bakedFormation.updateTotalRevenue(amount);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+        return ResponseEntity.ok().body("Revenue updated successfully");
     }
 
     //delete customer. May need to change.

@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 //May merge with JWTRequest. 
 @JsonInclude(Include.NON_NULL)
+@Setter
 public class SingleCustomer {
 	@JsonProperty
 	private String email;
