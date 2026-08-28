@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM eclipse-temurin:11-jdk-jammy AS build
+FROM eclipse-temurin:17-jdk-jammy AS build
 WORKDIR /workspace
 
 COPY gradlew settings.gradle build.gradle ./
@@ -10,7 +10,7 @@ COPY src src
 RUN sh gradlew --no-daemon --stacktrace bootJar \
     && cp build/libs/*.jar /workspace/app.jar
 
-FROM eclipse-temurin:11-jre-jammy AS runtime
+FROM eclipse-temurin:17-jre-jammy AS runtime
 WORKDIR /app
 
 RUN groupadd --system --gid 1001 bakery \
