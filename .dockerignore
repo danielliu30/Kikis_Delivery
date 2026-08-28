@@ -1,0 +1,17 @@
+.git
+.gitignore
+.gradle
+build
+bin
+.idea
+.metals
+.settings
+.vscode
+.classpath
+.project
+*.stackdump
+.env
+*.env
+README.md
+Dockerfile
+.dockerignore
