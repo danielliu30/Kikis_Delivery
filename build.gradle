@@ -11,6 +11,25 @@ repositories {
     mavenCentral()
 }
 
+// AWS-dependent tests live in src/integrationTest and are excluded from `check`/`build`.
+// Run them on demand with `./gradlew integrationTest` (requires AWS credentials and app env vars).
+sourceSets {
+    integrationTest {
+        java.srcDir 'src/integrationTest/java'
+        resources.srcDir 'src/integrationTest/resources'
+        compileClasspath += sourceSets.main.output + configurations.testCompileClasspath
+        runtimeClasspath += output + compileClasspath + configurations.testRuntimeClasspath
+    }
+}
+
+task integrationTest(type: Test) {
+    description = 'Runs AWS-dependent integration tests (needs AWS credentials, JWT_SECRET, MAIL_USERNAME, MAIL_PASSWORD).'
+    group = 'verification'
+    testClassesDirs = sourceSets.integrationTest.output.classesDirs
+    classpath = sourceSets.integrationTest.runtimeClasspath
+    shouldRunAfter test
+}
+
 dependencies {
     
     implementation 'org.springframework.boot:spring-boot-starter-web:2.1.4.RELEASE'
