@@ -15,6 +15,9 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonSerializer;
 
 import bakery.Models.BakedGoods;
 import bakery.Models.PurchasedItem;
@@ -33,7 +36,16 @@ public class BakedFormation {
     private final S3Connection s3Connection;
     private final EmailConnection emailConnection;
     private final DynamoMapper dbMapper;
-    private static final Gson gson = new Gson();
+    // serialize Link as {"rel": "...", "href": "..."}, matching the pre-1.0
+    // spring-hateoas field layout that clients of these endpoints expect
+    private static final Gson gson = new GsonBuilder()
+            .registerTypeAdapter(Link.class, (JsonSerializer<Link>) (link, type, context) -> {
+                JsonObject json = new JsonObject();
+                json.addProperty("rel", link.getRel().value());
+                json.addProperty("href", link.getHref());
+                return json;
+            })
+            .create();
 
     private final String baseURL = "http://localhost:8080/store/";
 
