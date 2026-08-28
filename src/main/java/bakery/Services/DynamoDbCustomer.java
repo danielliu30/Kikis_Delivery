@@ -97,7 +97,7 @@ class DynamoDbCustomer {
 				tempMap.put(indKey, item.get(indKey).s());
 			}
 			tempMap.put("Purchase",
-					new Link("http://localhost:8080/store/purchaseItem/" + partition.append(secondary)).getHref());
+					Link.of("http://localhost:8080/store/purchaseItem/" + partition.append(secondary)).getHref());
 			partition.setLength(0);
 			secondary.setLength(0);
 			result.add(tempMap);
@@ -176,7 +176,7 @@ class DynamoDbCustomer {
 
 					if (indKey.equals("email")) {
 						tempMap.put("delete",
-								new Link("http://localhost:8080/store/deleteCustomer/" + indKey + "/" + str).getHref());
+								Link.of("http://localhost:8080/store/deleteCustomer/" + indKey + "/" + str).getHref());
 					}
 					tempMap.put(indKey, str);
 				}

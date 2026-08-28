@@ -6,13 +6,16 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+import javax.crypto.SecretKey;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
 
 @Service
 public class TokenUtil implements Serializable {
@@ -22,6 +25,12 @@ public class TokenUtil implements Serializable {
 
 	@Value("${jwt.secret}")
 	private String secret;
+
+	// jjwt <= 0.9 treated a String signing key as base64-encoded; keep that
+	// interpretation so existing secrets and tokens remain valid
+	private SecretKey signingKey() {
+		return Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret));
+	}
 
 	// retrieve username from jwt token
 	public String getUsernameFromToken(String token) {
@@ -39,7 +48,7 @@ public class TokenUtil implements Serializable {
 	}
 
 	private Claims getAllClaimsFromToken(String token) {
-		return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
+		return Jwts.parser().verifyWith(signingKey()).build().parseSignedClaims(token).getPayload();
 	}
 
 	private Boolean isTokenExpired(String token) {
@@ -53,9 +62,9 @@ public class TokenUtil implements Serializable {
 	}
 
 	private String doGenerateToken(Map<String, Object> claims, String subject) {
-		JwtBuilder token = Jwts.builder().setClaims(claims).setSubject(subject)
-				.setIssuedAt(new Date(System.currentTimeMillis())).setExpiration(new Date(System.currentTimeMillis()+ JWT_TOKEN_VALIDITY*1000))
-				.signWith(SignatureAlgorithm.HS512, secret);
+		JwtBuilder token = Jwts.builder().claims(claims).subject(subject)
+				.issuedAt(new Date(System.currentTimeMillis())).expiration(new Date(System.currentTimeMillis()+ JWT_TOKEN_VALIDITY*1000))
+				.signWith(signingKey(), Jwts.SIG.HS512);
 
 		return token.compact();
 	}

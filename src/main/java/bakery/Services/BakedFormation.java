@@ -56,9 +56,9 @@ public class BakedFormation {
         List<Link> linkSet = new LinkedList<Link>();
         Map<String, List<String>> reformed = this.getMenu();
         reformed.get("BakedItem").forEach(item -> {
-            linkSet.add(new Link(item, baseURL + item));
+            linkSet.add(Link.of(item, baseURL + item));
         });
-        linkSet.add(new Link("Customer", baseURL + "customerList"));
+        linkSet.add(Link.of("Customer", baseURL + "customerList"));
         // look into using links instead of link
         return gson.toJson(linkSet);
     }
@@ -72,7 +72,7 @@ public class BakedFormation {
      */
     public String getAvailableBakedItems(String category) {
         Map<String, Object> reformed = new HashMap<String, Object>();
-        reformed.put("Home", new Link("home", baseURL));
+        reformed.put("Home", Link.of("home", baseURL));
         reformed.put(category, dbConnection.getBakedGoodCategoryList(category));
         return gson.toJson(reformed);
 
