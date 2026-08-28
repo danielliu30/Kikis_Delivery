@@ -27,15 +27,16 @@ dependencies {
     //security
 	implementation group: 'io.jsonwebtoken', name: 'jjwt', version: '0.7.0'
 	implementation group: 'org.springframework.security', name: 'spring-security-core', version: '5.1.5.RELEASE'
-	implementation group: 'org.springframework.security', name: 'spring-security-config', version: '3.2.0.RELEASE'
-	implementation group: 'org.springframework.security', name: 'spring-security-web', version: '5.0.6.RELEASE'
+	implementation group: 'org.springframework.security', name: 'spring-security-config', version: '5.1.5.RELEASE'
+	implementation group: 'org.springframework.security', name: 'spring-security-web', version: '5.1.5.RELEASE'
     //mail
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-mail', version: '2.1.4.RELEASE'
     //format
 	implementation group: 'org.springframework.hateoas', name: 'spring-hateoas', version: '0.23.0.RELEASE'
     implementation group: 'com.google.code.gson', name: 'gson', version: '2.7'
     implementation group: 'javax.xml.bind', name: 'jaxb-api', version: '2.2.4'
-    implementation group: 'org.projectlombok', name: 'lombok', version: '1.18.12'
+    compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.12'
+    annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.12'
 
     //test
     testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: '2.1.4.RELEASE'
