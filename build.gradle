@@ -22,32 +22,32 @@ dependencies {
     implementation 'software.amazon.awssdk:s3'
 
     // https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-dynamodb
-    compile group: 'com.amazonaws', name: 'aws-java-sdk-dynamodb', version: '1.11.940'
+    implementation group: 'com.amazonaws', name: 'aws-java-sdk-dynamodb', version: '1.11.940'
 
 
     // https://mvnrepository.com/artifact/org.postgresql/postgresql
-    compile group: 'org.postgresql', name: 'postgresql', version: '42.1.4'
+    implementation group: 'org.postgresql', name: 'postgresql', version: '42.1.4'
 
     //security
-	compile group: 'io.jsonwebtoken', name: 'jjwt', version: '0.7.0'
-	compile group: 'org.springframework.security', name: 'spring-security-core', version: '5.1.5.RELEASE'
-	compile group: 'org.springframework.security', name: 'spring-security-config', version: '5.1.5.RELEASE'
-	compile group: 'org.springframework.security', name: 'spring-security-web', version: '5.1.5.RELEASE'
+	implementation group: 'io.jsonwebtoken', name: 'jjwt', version: '0.7.0'
+	implementation group: 'org.springframework.security', name: 'spring-security-core', version: '5.1.5.RELEASE'
+	implementation group: 'org.springframework.security', name: 'spring-security-config', version: '5.1.5.RELEASE'
+	implementation group: 'org.springframework.security', name: 'spring-security-web', version: '5.1.5.RELEASE'
     //mail
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter-mail', version: '2.1.4.RELEASE'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-mail', version: '2.1.4.RELEASE'
     //format
-	compile group: 'org.springframework.hateoas', name: 'spring-hateoas', version: '0.23.0.RELEASE'
-    compile group: 'com.google.code.gson', name: 'gson', version: '2.7'
-    compile group: 'javax.xml.bind', name: 'jaxb-api', version: '2.2.4'
+	implementation group: 'org.springframework.hateoas', name: 'spring-hateoas', version: '0.23.0.RELEASE'
+    implementation group: 'com.google.code.gson', name: 'gson', version: '2.7'
+    implementation group: 'javax.xml.bind', name: 'jaxb-api', version: '2.2.4'
     compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.12'
     annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.12'
 
     //test
-    testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: '2.1.4.RELEASE'
-    testCompile group: 'junit', name: 'junit', version: '4.12'
+    testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: '2.1.4.RELEASE'
+    testImplementation group: 'junit', name: 'junit', version: '4.12'
     testImplementation('junit:junit:4.13')
     // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
-    compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
+    implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
 
 
 }
