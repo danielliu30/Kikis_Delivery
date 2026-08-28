@@ -1,5 +1,8 @@
 package bakery.Services;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.stereotype.Component;
 
 import bakery.Models.BakedGoods;
@@ -70,7 +73,25 @@ class DynamoMapper {
             .build();
     private static final DynamoDbTable<BakedGoods> table = enhancedClient.table(TABLE_NAME, SCHEMA);
 
+    /**
+     * @throws IllegalArgumentException if a key attribute of the BakedGoods table is
+     *                                  missing, since DynamoDB would reject the write
+     */
     void addBakedItem(BakedGoods item) {
+        List<String> missing = new ArrayList<>();
+        if (isBlank(item.BakedItem)) {
+            missing.add("BakedItem");
+        }
+        if (isBlank(item.ItemVariation)) {
+            missing.add("ItemVariation");
+        }
+        if (!missing.isEmpty()) {
+            throw new IllegalArgumentException("Missing required field(s): " + String.join(", ", missing));
+        }
         table.putItem(item);
+    }
+
+    private static boolean isBlank(String value) {
+        return value == null || value.trim().isEmpty();
     }
 }

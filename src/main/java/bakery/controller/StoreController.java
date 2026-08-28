@@ -70,7 +70,11 @@ public class StoreController {
     // probably want to add bake item models for json mapping
     @PostMapping(path = "/addItem")
     public ResponseEntity<String> AddStoreItem(@RequestBody BakedGoods bakedItem) throws IOException {
-        bakedFormation.addAvailableBakedItems(bakedItem);
+        try {
+            bakedFormation.addAvailableBakedItems(bakedItem);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
         return ResponseEntity.ok().body("item successfully added");
     }
 
