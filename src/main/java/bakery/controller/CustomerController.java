@@ -33,17 +33,16 @@ import bakery.Services.Security.TokenUtil;
 @RequestMapping("/customer")
 public class CustomerController {
 
-	// why dont I inject via constructor???????
-	@Autowired
-	private static BakedFormation bakedFormation;
+	private final BakedFormation bakedFormation;
 
 	@Autowired
 	private TokenUtil tokenUtil;
 
 	private static Gson gson = new Gson();
 
+	@Autowired
 	private CustomerController(BakedFormation bakedFormation) {
-		CustomerController.bakedFormation = bakedFormation;
+		this.bakedFormation = bakedFormation;
 	}
 
 	// generates JWT when sign in
