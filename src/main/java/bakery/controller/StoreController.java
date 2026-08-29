@@ -74,12 +74,6 @@ public class StoreController {
         return ResponseEntity.ok().body("item successfully added");
     }
 
-    // should be post but was testing S3 operations
-    @GetMapping(path = "/upload"/* , headers = "application/json" */)
-    public void uploadItem() {
-        bakedFormation.uploadFile();
-    }
-
     /**
      * Reads a JSON object and deserializes into a customer for storage purposes
      * 
