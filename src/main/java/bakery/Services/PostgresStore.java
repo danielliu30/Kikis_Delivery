@@ -54,7 +54,7 @@ class PostgresStore {
 	private final PasswordSecurity secureDb;
 
 	@Autowired
-	private PostgresStore(CustomerRepository customers, BakedGoodRepository bakedGoods,
+	PostgresStore(CustomerRepository customers, BakedGoodRepository bakedGoods,
 			ValidationTokenRepository validationTokens, CustomerOrderRepository customerOrders,
 			StoreFrontRepository storeFront, PasswordSecurity secureDb) {
 		this.customers = customers;
@@ -120,10 +120,15 @@ class PostgresStore {
 		return result;
 	}
 
+	// @Transactional only applies to public methods on the Spring proxy
 	@Transactional
-	String deleteBakedItem(PurchasedItem purchased) {
+	public String deleteBakedItem(PurchasedItem purchased) {
 		if (purchased.orderList == null) {
 			return "Nothing to delete";
+		}
+		if (purchased.userName == null || !customers.existsById(purchased.userName)) {
+			LOGGER.error("Unable to complete purchase. Customer {} does not exist", purchased.userName);
+			return "Customer does not exist";
 		}
 		for (BakedGoods item : purchased.orderList) {
 			Optional<BakedGoodRecord> stocked = bakedGoods.findByBakedItemAndItemVariation(item.BakedItem,
@@ -140,10 +145,6 @@ class PostgresStore {
 	}
 
 	private void storeCustomerHistory(BakedGoodRecord purchasedItem, String email) {
-		if (email == null || !customers.existsById(email)) {
-			LOGGER.error("Unable to record purchase history. Customer {} does not exist", email);
-			return;
-		}
 		CustomerOrderRecord order = new CustomerOrderRecord();
 		order.setCustomerEmail(email);
 		order.setItem(GSON.toJson(describe(purchasedItem)));
@@ -177,7 +178,7 @@ class PostgresStore {
 	}
 
 	@Transactional
-	Boolean verifyToken(String token) {
+	public Boolean verifyToken(String token) {
 		Optional<ValidationTokenRecord> stored = validationTokens.findById(token);
 		if (!stored.isPresent()) {
 			return false;
@@ -201,8 +202,8 @@ class PostgresStore {
 		try {
 			record.setPassword(secureDb.encryptPassWord(customer.getPassWord()));
 		} catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
-			LOGGER.error("Unable to add customer. Password could not be hashed", e);
-			return;
+			// Rolls back the token deletion so the signup can still be verified
+			throw new IllegalStateException("Password could not be hashed", e);
 		}
 		customers.save(record);
 	}
@@ -212,14 +213,13 @@ class PostgresStore {
 	}
 
 	@Transactional
-	void updateTotalRevenue(double amount) {
-		StoreFrontRecord record = storeFront.findById(TOTAL_REVENUE).orElseGet(() -> {
+	public void updateTotalRevenue(double amount) {
+		if (storeFront.increment(TOTAL_REVENUE, BigDecimal.valueOf(amount)) == 0) {
 			StoreFrontRecord fresh = new StoreFrontRecord();
 			fresh.setId(TOTAL_REVENUE);
-			return fresh;
-		});
-		record.setTotalMoneyMade(record.getTotalMoneyMade().add(BigDecimal.valueOf(amount)));
-		storeFront.save(record);
+			fresh.setTotalMoneyMade(BigDecimal.valueOf(amount));
+			storeFront.save(fresh);
+		}
 	}
 
 	boolean validateLogIn(SingleCustomer customer) throws NoSuchAlgorithmException, InvalidKeySpecException {
