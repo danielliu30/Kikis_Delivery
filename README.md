@@ -13,7 +13,8 @@ All requests made after must include the AUthorization token in the header of th
 All data lives in PostgreSQL. The schema is created by the Flyway migration in
 `src/main/resources/db/migration` on startup: `customers`, `baked_goods`,
 `validation_tokens`, `customer_orders` and `store_front`. Connection settings come
-from `DATABASE_URL`, `DATABASE_USER` and `DATABASE_PASSWORD`.
+from `DATABASE_URL`, `DATABASE_USER` and `DATABASE_PASSWORD`; the credentials have no
+defaults, so the app refuses to start without them.
 
 ## Running with Docker
 

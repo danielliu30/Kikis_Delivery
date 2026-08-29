@@ -214,12 +214,7 @@ class PostgresStore {
 
 	@Transactional
 	public void updateTotalRevenue(double amount) {
-		if (storeFront.increment(TOTAL_REVENUE, BigDecimal.valueOf(amount)) == 0) {
-			StoreFrontRecord fresh = new StoreFrontRecord();
-			fresh.setId(TOTAL_REVENUE);
-			fresh.setTotalMoneyMade(BigDecimal.valueOf(amount));
-			storeFront.save(fresh);
-		}
+		storeFront.addRevenue(TOTAL_REVENUE, BigDecimal.valueOf(amount));
 	}
 
 	boolean validateLogIn(SingleCustomer customer) throws NoSuchAlgorithmException, InvalidKeySpecException {

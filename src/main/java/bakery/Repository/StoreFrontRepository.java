@@ -13,7 +13,17 @@ import bakery.Models.entity.StoreFrontRecord;
 @Repository
 public interface StoreFrontRepository extends JpaRepository<StoreFrontRecord, String> {
 
+    /**
+     * Adds to a storefront running total in a single statement, inserting the row
+     * if it is missing, so concurrent callers can neither lose an amount nor
+     * collide on the primary key.
+     *
+     * @param id     storefront row to credit, e.g. {@code TotalRevenue}
+     * @param amount value added to the stored total; negative values subtract
+     */
     @Modifying
-    @Query("update StoreFrontRecord s set s.totalMoneyMade = s.totalMoneyMade + :amount where s.id = :id")
-    int increment(@Param("id") String id, @Param("amount") BigDecimal amount);
+    @Query(value = "insert into store_front (id, total_money_made) values (:id, :amount) "
+            + "on conflict (id) do update set total_money_made = store_front.total_money_made + :amount",
+            nativeQuery = true)
+    void addRevenue(@Param("id") String id, @Param("amount") BigDecimal amount);
 }
