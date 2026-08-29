@@ -15,18 +15,10 @@ dependencies {
     
     implementation 'org.springframework.boot:spring-boot-starter-web:2.1.4.RELEASE'
 
-    //AWS
-    implementation platform('software.amazon.awssdk:bom:2.10.56')
-    implementation 'software.amazon.awssdk:dynamodb'
-    implementation 'software.amazon.awssdk:dynamodb-enhanced:2.12.0'
-    implementation 'software.amazon.awssdk:s3'
-
-    // https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-dynamodb
-    compile group: 'com.amazonaws', name: 'aws-java-sdk-dynamodb', version: '1.11.940'
-
-
-    // https://mvnrepository.com/artifact/org.postgresql/postgresql
-    compile group: 'org.postgresql', name: 'postgresql', version: '42.1.4'
+    //persistence
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: '2.1.4.RELEASE'
+    compile group: 'org.flywaydb', name: 'flyway-core', version: '5.2.4'
+    runtime group: 'org.postgresql', name: 'postgresql', version: '42.2.25'
 
     //security
 	compile group: 'io.jsonwebtoken', name: 'jjwt', version: '0.7.0'
@@ -46,6 +38,7 @@ dependencies {
     testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: '2.1.4.RELEASE'
     testCompile group: 'junit', name: 'junit', version: '4.12'
     testImplementation('junit:junit:4.13')
+    testCompile group: 'com.h2database', name: 'h2', version: '1.4.197'
     // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
     compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
 

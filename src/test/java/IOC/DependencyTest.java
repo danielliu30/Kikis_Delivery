@@ -37,8 +37,8 @@ public class DependencyTest {
         assertTrue(bakedFormation != null);
     }
     @Test
-    public void dynamoDependencyTest(){
-        assertTrue(bakedFormation.getDynamoDbConnection() != null);
+    public void dataStoreDependencyTest(){
+        assertTrue(bakedFormation.getDbConnection() != null);
     }
     @Test
     public void emailConnectionDependencyTest(){

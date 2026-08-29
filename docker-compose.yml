@@ -1,0 +1,35 @@
+services:
+  db:
+    image: postgres:13-alpine
+    environment:
+      POSTGRES_DB: bakery
+      POSTGRES_USER: bakery
+      POSTGRES_PASSWORD: bakery
+    ports:
+      - "5432:5432"
+    volumes:
+      - bakery-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U bakery -d bakery"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: jdbc:postgresql://db:5432/bakery
+      DATABASE_USER: bakery
+      DATABASE_PASSWORD: bakery
+      JWT_SECRET: ${JWT_SECRET}
+      MAIL_USERNAME: ${MAIL_USERNAME}
+      MAIL_PASSWORD: ${MAIL_PASSWORD}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:3000}
+    ports:
+      - "8080:8080"
+
+volumes:
+  bakery-data:

@@ -21,7 +21,7 @@ import bakery.Models.PurchasedItem;
 import bakery.Models.SingleCustomer;
 
 /**
- * An abstraction layer between aws services and all REST controllers
+ * An abstraction layer between the data store and all REST controllers
  * 
  * @author barney
  *
@@ -29,21 +29,17 @@ import bakery.Models.SingleCustomer;
 @Service
 public class BakedFormation {
 
-    private final DynamoDbCustomer dbConnection;
-    private final S3Connection s3Connection;
+    private final PostgresStore dbConnection;
     private final EmailConnection emailConnection;
-    private final DynamoMapper dbMapper;
     private static final Gson gson = new Gson();
 
     private final String baseURL = "http://localhost:8080/store/";
 
     // needed to change privacy from private due to runtime error with @cacheable
     @Autowired
-    BakedFormation(DynamoDbCustomer dbConnection, S3Connection s3Connection, EmailConnection emailConnection, DynamoMapper dbMapper) {
+    BakedFormation(PostgresStore dbConnection, EmailConnection emailConnection) {
         this.dbConnection = dbConnection;
-        this.s3Connection = s3Connection;
         this.emailConnection = emailConnection;
-        this.dbMapper = dbMapper;
     }
 
     /**
@@ -54,8 +50,7 @@ public class BakedFormation {
      */
     public String getCategories() {
         List<Link> linkSet = new LinkedList<Link>();
-        Map<String, List<String>> reformed = this.getMenu();
-        reformed.get("BakedItem").forEach(item -> {
+        this.getMenu().forEach(item -> {
             linkSet.add(new Link(item, baseURL + item));
         });
         linkSet.add(new Link("Customer", baseURL + "customerList"));
@@ -86,12 +81,7 @@ public class BakedFormation {
      *                                 string
      */
     public void addAvailableBakedItems(BakedGoods item) throws JsonProcessingException {
-        //dbConnection.addAvailableBakedGoods(item);
-        dbMapper.addBakedItem(item);
-    }
-
-    public void uploadFile() {
-        s3Connection.uploadItem();
+        dbConnection.addBakedItem(item);
     }
 
     /**
@@ -100,8 +90,8 @@ public class BakedFormation {
      */
     // caching for google chrome, since it doesn't honor default http cache
     @Cacheable("allCategories")
-    private Map<String, List<String>> getMenu() {
-        return s3Connection.retrieveCategoryList();
+    private List<String> getMenu() {
+        return dbConnection.getCategories();
     }
 
     public void addCustomer(SingleCustomer customer) throws JsonProcessingException {
@@ -149,7 +139,7 @@ public class BakedFormation {
     }
 
     //testing getters
-    public DynamoDbCustomer getDynamoDbConnection(){
+    public PostgresStore getDbConnection(){
         return dbConnection;
     }
 

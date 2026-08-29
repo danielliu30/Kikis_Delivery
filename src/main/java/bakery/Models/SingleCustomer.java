@@ -36,4 +36,19 @@ public class SingleCustomer {
 	public String getPassWord(){
 		return password;
 	}
+
+	@JsonIgnore
+	public String getName(){
+		return name;
+	}
+
+	@JsonIgnore
+	public String getMember(){
+		return member;
+	}
+
+	@JsonIgnore
+	public String getAdmin(){
+		return admin;
+	}
 }

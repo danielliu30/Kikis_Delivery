@@ -8,15 +8,12 @@ import java.security.spec.InvalidKeySpecException;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import bakery.Services.BakedFormation;
-
 @Component
-class DynamoSecurity {
+class PasswordSecurity {
 
-    private DynamoSecurity() {
+    private PasswordSecurity() {
 
     }
 

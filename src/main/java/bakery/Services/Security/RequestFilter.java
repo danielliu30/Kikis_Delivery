@@ -44,7 +44,7 @@ public class RequestFilter extends OncePerRequestFilter {
 				if (userName != null && jwtTokenUtil.validateToken(requestToken)
 						&& SecurityContextHolder.getContext().getAuthentication() == null) {
 
-					// Verify the user actually exists in DynamoDB before granting access
+					// Verify the user actually exists in the data store before granting access
 					UserDetails userDetails = userDetailService.loadUserByUsername(userName);
 
 					UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
